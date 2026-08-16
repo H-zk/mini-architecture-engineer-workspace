@@ -1,0 +1,30 @@
+{
+  // 工作区 markdown 规则单一真源。
+  // AI 写/改 md（任何工具）+ workspace-check.py 都守此配置。
+  // AGENTS「编辑文档」节只做翻译锚定，不发明新规则——真源就在本文件。
+  // 「启用并配置风格」段 = AGENTS 翻译锚定的核心条，两者一一对应。
+
+  "default": true,
+
+  // 关闭：与工作区风格冲突或噪音过大
+  "MD013": false, // 行长度限制（工作区文档多有长行，不强制换行）
+  "MD024": { "siblings_only": true }, // 同级标题不重复（允许不同父节下同名标题）
+  "MD041": false, // 首行须一级标题（工作区用 frontmatter 开头）
+  "MD033": false, // 禁 inline HTML（允许 <details>/<sub> 等少量 HTML）
+  "MD036": false, // 强调作标题（**bold** 独占行常作子小节）
+  "MD012": false, // 连续空行（噪音）
+  "MD029": false, // 有序列表标记（工作区用跨章节连续编号，与 one_or_ordered 冲突）
+  "MD025": false, // 多个 H1（CURRENT 模板用「# 当前进度」+「# 历史」多 H1 分节；frontmatter 代文档标题）
+  "MD060": false, // markdownlint 表格列对齐风格：中英文混排 + 长标识符手动对齐维护成本高；保留 MD056（列数一致）防撕裂即可
+
+  // 启用并配置风格（AGENTS「编辑文档」节翻译锚定的核心条，显式列出便于对应）
+  "MD001": true, // 标题层级不跳级（# → ## → ###）
+  "MD004": { "style": "dash" }, // 列表标记统一 -
+  "MD007": { "indent": 2 }, // 缩进列表 2 空格
+  "MD009": true, // 行尾无多余空格
+  "MD022": true, // 标题前后空行
+  "MD032": true, // 列表前后空行
+  "MD040": true, // 代码块必带语言（```bash / ```python / ```mermaid）
+  "MD050": { "style": "asterisk" }, // 强调用 **（双星号）
+  "MD056": true // 表格列数一致
+}

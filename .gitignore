@@ -1,0 +1,30 @@
+# 项目源码
+src/*
+!src/.gitkeep
+
+# lib 忽略
+**/node_modules
+
+# 临时输出（对比测试产物等），不进 git
+temp/*
+!temp/README.md
+
+# 环境
+.env.local
+.env.temp
+
+# agent 工具本机配置（防误提交；密钥方案上不在配置放明文副本，见 .tools/env/README.md）
+.claude/settings.local.json
+.codex/config.toml
+
+# Claude Code skills 桥（.claude/skills/ → .agents/skills/ 的 junction）
+# Windows 下 symlink 需管理员权限 → 改用 junction（mklink /J，无需特殊权限）。
+# Claude Code 原生只发现 .claude/skills/，经此 junction 重定向到单一真源 .agents/skills/。
+# 环境特定不进 git（core.symlinks=false 下 git 会跟随 junction 重复跟踪内容）；换机重建见 .tools/skill-bridge/
+.claude/skills/
+
+# 编程语言相关
+__pycache__
+
+# VS Code 多根工作区文件（机器相关/本地，不进 git）
+*.code-workspace
