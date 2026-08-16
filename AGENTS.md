@@ -22,6 +22,7 @@
 - `notes` — 业务/技术知识（先查 `notes/INDEX.md`）
 - `reference` — 代码开发相关内容（`repos.md` 仓库清单、架构设计与技术规范）。**人类主写、AI 辅助；AI 经授权后才能写入**（默认只读）
 - `src` — 业务代码项目（**操作者 clone 进来即授权 AI 工作**），不进本仓 git；AI 只 clone/pull/编辑，**不 commit、不 push**
+- `position` — 定位基准与对比参照登记（[position/README.md](./position/README.md)）：同事库/开源参照清单（人类维护）+ 对比记录 `compare/`；对比与重大机制更新前先对照定位基准
 - `retrospectives` — 阶段回顾存档（锚定迭代，方法见 `retrospectives/README.md`）
 - `workspace-grills` — 治理审计决策记录（冷层；真源不反向引用它）
 - `temp` — 临时输出，**不进 git**；避免污染全局 `/tmp`，用完即清
@@ -97,7 +98,7 @@
 ### 项目代码规范
 
 - **源仓 `AGENTS.md` 优先**：改 `src/` 下任一项目代码前，先读并遵循该仓库根目录的 `AGENTS.md`（若存在），项目规范与踩坑点单一真源
-- **不建影子规范、经验升级为约束**：项目内规范（结构/封装/命名/lint/包管理器）不沉淀到 `exps/`；缺失且反复返工 → 经授权补源仓 `AGENTS.md`；同类问题入 `exps/` 后仍重复 → 按 [WORKFLOW §2.4](./WORKFLOW.md)「经验三级与毕业」升级为 checklist/脚本校验/规则
+- **不建影子规范、经验升级为约束**：项目内规范（结构/封装/命名/lint/包管理器）不沉淀到 `exps/`；缺失且反复返工 → 经授权补源仓 `AGENTS.md`（方法论 = agents-md-refiner skill）；同类问题入 `exps/` 后仍重复 → 按 [WORKFLOW §2.4](./WORKFLOW.md)「经验三级与毕业」升级为 checklist/脚本校验/规则
 
 ### 知识沉淀
 
@@ -110,6 +111,7 @@
 ### skills 加载
 
 - **真源与路由**：详见 [WORKFLOW §1.3](./WORKFLOW.md)（任务语义 → skill 路由表）。真源 `.agents/skills/`（工具无关；claude 经 junction 桥重定向，重建见 `.tools/skill-bridge/`）
+- **命令入口（`/command`）**：`.agents/commands/*.md` 薄路由——frontmatter 声明关联 skill + `$ARGUMENTS` 透传，不复制 SKILL 正文；新增/修改命令与 skill 同步维护
 - **无自动发现的工具（codex / copilot）**：任务语义命中某 skill 时**主动读取其 `SKILL.md`** 再按流程执行（清单 `.agents/skills/INDEX.md`），不因未自动加载就跳过
 - **外部系统深度接入的 skill 配对加载**：若你接入了外部系统查询 skill（工单/日志/DB），其与辅助定制层（调用入口、展示规则）**配对加载、缺一不可**（接入思路见 [GUIDE](./GUIDE.md) §1.2）
 

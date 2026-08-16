@@ -63,6 +63,7 @@ flowchart LR
 | `notes/`                                     | 业务与技术知识                                         | AI                           |
 | `reference/`                                 | 代码开发参考（仓库清单、架构规范）                     | **人类主写**，AI 经授权辅助  |
 | `src/`                                       | 业务代码项目（clone 即授权，不进 git）                 | AI 只编辑                    |
+| `position/`                                  | 定位基准与对比参照登记（同事库/开源参照清单 + compare 对比记录） | 清单人类维护、记录 AI        |
 | `temp/`                                      | 临时输出（不进 git，用完即清）                         | AI                           |
 | `retrospectives/`                            | 阶段回顾存档（锚定迭代）                               | AI + 人类 review             |
 | `workspace-grills/`                          | 工作区治理审计决策记录（冷层）                         | AI + 人类 review             |

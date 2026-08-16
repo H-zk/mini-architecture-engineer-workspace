@@ -7,7 +7,7 @@
 
 | 标题 | 摘要 | 关键词 | 文件 |
 | ---- | ---- | ------ | ---- |
-| 工作区一致性检查 | 只读检查：版本一致性 + CURRENT schema/状态不变量 + 正式产物（按执行流 skill Outputs）+ 安全（reset/CERT_NONE/明文密钥）+ links 分区（本地链接存在性 + WORKFLOW §N.M 引用有效性，warning 级）+ markdownlint；error/warning 分级，退出码 0/1/2 | workspace-check, 一致性, 校验, lint, links | workspace-check.py |
+| 工作区一致性检查 | 只读检查：版本一致性 + CURRENT schema/状态不变量 + 正式产物（按执行流 skill Outputs）+ 安全（reset/CERT_NONE/明文密钥）+ links 分区（本地链接存在性 + WORKFLOW §N.M 引用有效性，warning 级）+ markdownlint；error/warning 分级，退出码 0/1/2；支持 `--task` 单任务聚焦与 `--staged` 暂存集聚焦（commit 前机器门禁） | workspace-check, 一致性, 校验, lint, links, staged | workspace-check.py |
 | 环境变量加载 | 把 `.env`/`.env.local` 变量注入当前 shell（bash `source` / PowerShell `.`）——「加载不读取」密钥约定；配套 README 讲红线 | env, 密钥, 加载, 加载不读取 | env/load-env.sh, env/load-env.ps1 |
 | Claude skills 桥 | 重建 `.claude/skills/` → `.agents/skills/` 的 junction（Windows 免管理员；换机/重 clone 后跑一次） | claude, junction, skills, 桥 | skill-bridge/link-claude-skills.ps1 |
 

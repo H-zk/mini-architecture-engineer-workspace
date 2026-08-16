@@ -51,6 +51,7 @@ triggers:
      - **补丁法**：`git diff HEAD -- <file>` 按 hunk 切分 → `git add <file>` 后 `git apply --cached --reverse <摘除补丁>`，把不属于本 commit 的 hunk 从索引摘除；
      - **临时编辑法**（相邻改动被 git 合并成单 hunk、补丁法切不开时）：`cp` 备份文件 → 编辑到中间态（只留本主题改动）→ add / commit → `cp` 备份精确还原。**中断恢复**：会话在 commit 后、还原前中断时工作区会停在中间态——接手先 `git status` 对照备份把文件还原到最终态再继续，勿在中间态上续作。
    - **每个 commit 前逐文件核验**：`git diff --cached --stat` + 关键文件 `git diff --cached <file>`，确认暂存集只含本主题内容。
+   - **commit 前机器门禁（lint-staged 式，聚焦暂存集）**：暂存集就绪后跑 `python .tools/workspace-check.py --staged`——只检查暂存文件（markdownlint / 任务 schema+产物 / 链接 / 密钥扫描按文件聚焦；archive 任务只查 schema 与必达已完成，与全量同口径），`errors=0` 才 commit；全局分区（worktrees/temp 等）不在此跑，任务收尾仍按收尾门禁（`--task` / 全量）。
    - **完整性验证**：Σ各 commit 增删行数 == 净 diff（`git diff <拆分前基线> HEAD --stat`），且 `git status` 干净——证明拆分无丢失、无重复。
    - 默认不 push（授权另说）；temp 拆分产物（补丁、备份）用完即清。
 
@@ -63,7 +64,7 @@ triggers:
 - [ ] 修复动手前重核过既有约定/先例？误报已撤销并透明说明？
 - [ ] 建议已分档（立即修 / 延后 / 操作者定），未把裁决类当问题、未提前做延后类？
 - [ ] git 写操作（add / reset / commit）均在操作者明确授权后执行？修复轮保持 unstaged 与原批次区分？
-- [ ] 每个 commit 暂存集已逐文件核验只含本主题内容（含混合文件的 hunk 摘除核验）？
+- [ ] 每个 commit 暂存集已逐文件核验只含本主题内容（含混合文件的 hunk 摘除核验）？且 commit 前已跑 `--staged` 聚焦检查 `errors=0`？
 - [ ] 完整性验证通过（Σ行数 == 净 diff、status 干净）？未 push？
 
 > 反例信号：反馈被纠「漏了新文件 / 结论凭印象 / 修了不该修的（撞既有约定）/ commit 混了别的主题」，几乎都是上面某条没过。

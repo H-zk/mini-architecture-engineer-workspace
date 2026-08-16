@@ -36,6 +36,8 @@ warning 类（证据闭环 / 文档漂移 / markdownlint 违规）首版简化�
   python .tools/workspace-check.py --section links
   python .tools/workspace-check.py --section protocols
   python .tools/workspace-check.py --task workspace-optimize/task-YYYY-MM-DD-xxx   # 单目录增量（任务收尾聚焦）
+  python .tools/workspace-check.py --staged   # 暂存集聚焦（lint-staged 式，commit 前机器门禁：
+                                               # 只检查 git diff --cached 的文件，与收尾门禁互补）
 """
 import argparse
 import re
@@ -218,6 +220,60 @@ def _strip_fences(text):
     return FENCE_RE.sub("", text)
 
 
+# 链接检查覆盖面（根层常驻文档）；skills/exps 由 glob 扩展。--staged 复用同一口径
+_LINK_UNIVERSE_ROOT = ("AGENTS.md", "README.md", "HUMAN.md", "WORKFLOW.md", "GUIDE.md")
+# § 引用检查覆盖面（exps 含历史叙事不查，防误报）
+_SEC_REF_ROOT = ("AGENTS.md", "HUMAN.md", "WORKFLOW.md")
+
+
+def _wf_valid_secs():
+    """WORKFLOW 标题编号集（§ 引用校验基准）；WORKFLOW 不存在返回 None。"""
+    wf_path = ROOT / "WORKFLOW.md"
+    if not wf_path.exists():
+        return None
+    wf_body = _strip_fences(wf_path.read_text(encoding="utf-8"))
+    return set(WF_HEADING_RE.findall(wf_body))
+
+
+def _check_links_existence(p, warnings):
+    """单文件本地 Markdown 链接存在性（warning 级）。"""
+    try:
+        text = p.read_text(encoding="utf-8")
+    except Exception:
+        return
+    rel = p.relative_to(ROOT).as_posix()
+    body = _strip_fences(text)
+    for m in MD_LINK_RE.finditer(body):
+        target = m.group(1)
+        if target.startswith(("http://", "https://", "#", "mailto:")):
+            continue
+        path_part = target.split("#", 1)[0]
+        if not path_part:
+            continue
+        if not (p.parent / path_part).resolve().exists():
+            warnings.append(f"链接: {rel} → {target} 目标不存在")
+
+
+def _check_wf_refs(p, warnings, valid_secs):
+    """单文件 WORKFLOW §N.M 引用校验；WORKFLOW 自身 § 全量自检（剥离跨文档前缀/叙事区间）。"""
+    try:
+        text = _strip_fences(p.read_text(encoding="utf-8"))
+    except Exception:
+        return
+    wf_path = ROOT / "WORKFLOW.md"
+    rel = p.relative_to(ROOT).as_posix()
+    refs = set()
+    if p == wf_path:
+        cleaned = NARRATIVE_RANGE_RE.sub("", CROSS_DOC_SEC_RE.sub("", text))
+        refs.update(WF_SEC_RE.findall(cleaned))
+    else:
+        refs.update(WF_LINK_SEC_RE.findall(text))
+        refs.update(WF_TEXT_SEC_RE.findall(text))
+    for sec in refs:
+        if sec not in valid_secs:
+            warnings.append(f"章节引用: {rel} 引用 WORKFLOW §{sec} 不存在")
+
+
 def check_md_links(errors, warnings):
     """活跃文档的本地 Markdown 链接存在性 + WORKFLOW §N.M 引用有效性（warning 级）。
 
@@ -226,53 +282,36 @@ def check_md_links(errors, warnings):
     § 引用只查规则热层与 skill（exps 含历史叙事，如「原 §3–§6 已下沉」，查了会误报）。
     CHANGELOG / 任务目录 / workspace-grills 不扫（历史属性，原貌保留）。
     """
-    files = [ROOT / p for p in ("AGENTS.md", "README.md", "HUMAN.md", "WORKFLOW.md", "GUIDE.md")
-             if (ROOT / p).exists()]
+    files = [ROOT / p for p in _LINK_UNIVERSE_ROOT if (ROOT / p).exists()]
     for g in (".agents/skills/**/*.md", "exps/**/*.md"):
         files.extend(ROOT.glob(g))
 
-    for p in files:
-        try:
-            text = p.read_text(encoding="utf-8")
-        except Exception:
-            continue
-        rel = p.relative_to(ROOT).as_posix()
-        body = _strip_fences(text)
-        for m in MD_LINK_RE.finditer(body):
-            target = m.group(1)
-            if target.startswith(("http://", "https://", "#", "mailto:")):
-                continue
-            path_part = target.split("#", 1)[0]
-            if not path_part:
-                continue
-            if not (p.parent / path_part).resolve().exists():
-                warnings.append(f"链接: {rel} → {target} 目标不存在")
-
-    # WORKFLOW §N.M 引用：对 WORKFLOW 标题编号集校验；WORKFLOW.md 自身 § 全量自检
-    wf_path = ROOT / "WORKFLOW.md"
-    if not wf_path.exists():
+    valid_secs = _wf_valid_secs()
+    if valid_secs is None:
         return
-    wf_body = _strip_fences(wf_path.read_text(encoding="utf-8"))
-    valid_secs = set(WF_HEADING_RE.findall(wf_body))
+    for p in files:
+        _check_links_existence(p, warnings)
+    sec_files = [ROOT / p for p in _SEC_REF_ROOT if (ROOT / p).exists()]
+    sec_files.extend(ROOT.glob(".agents/skills/**/*.md"))
+    for p in sec_files:
+        _check_wf_refs(p, warnings, valid_secs)
 
-    sec_targets = [p for p in (ROOT / "AGENTS.md", ROOT / "HUMAN.md", wf_path) if p.exists()]
-    sec_targets.extend(ROOT.glob(".agents/skills/**/*.md"))
-    for p in sec_targets:
-        try:
-            text = _strip_fences(p.read_text(encoding="utf-8"))
-        except Exception:
+
+def check_staged_links(rel_paths, warnings):
+    """--staged：链接/§引用检查聚焦暂存文件（限全量覆盖面：根层常驻文档 + skills + exps）。"""
+    valid_secs = _wf_valid_secs()
+    if valid_secs is None:
+        return
+    for rel in rel_paths:
+        p = ROOT / rel
+        in_universe = rel in _LINK_UNIVERSE_ROOT or (
+            (rel.startswith(".agents/skills/") or rel.startswith("exps/")) and rel.endswith(".md")
+        )
+        if not in_universe or not p.is_file():
             continue
-        rel = p.relative_to(ROOT).as_posix()
-        refs = set()
-        if p == wf_path:
-            cleaned = NARRATIVE_RANGE_RE.sub("", CROSS_DOC_SEC_RE.sub("", text))
-            refs.update(WF_SEC_RE.findall(cleaned))
-        else:
-            refs.update(WF_LINK_SEC_RE.findall(text))
-            refs.update(WF_TEXT_SEC_RE.findall(text))
-        for sec in refs:
-            if sec not in valid_secs:
-                warnings.append(f"章节引用: {rel} 引用 WORKFLOW §{sec} 不存在")
+        _check_links_existence(p, warnings)
+        if rel in _SEC_REF_ROOT or rel.startswith(".agents/skills/"):
+            _check_wf_refs(p, warnings, valid_secs)
 
 
 # ─── 协议骨架复写检测（通用协议单一真源 = WORKFLOW）──────────────
@@ -442,18 +481,24 @@ def check_tasks(errors, warnings):
             check_task_current(entry, task_rel, errors, warnings)
 
 
+def _check_archive_entry(entry, task_rel, errors, warnings):
+    """archive 内单任务：schema 校验 + 必须已完成（「必达已完成」跨类型不变量 + reopen 归档硬截止）。
+    不跑 _check_products——历史任务旧产物档位/节名保留原貌（见 REVIEW_REQUIRED_HEADINGS 注释）；
+    --staged 推导出 archive 任务目录时走本函数，与全量 _check_archive 同口径。"""
+    check_task_current(entry, task_rel, errors, warnings)
+    cur = entry / "CURRENT.md"
+    if cur.exists():
+        status = (parse_current(cur) or {}).get("status", "")
+        if status != "已完成":
+            errors.append(f"{task_rel}: archive 内状态 '{status}'（archive 必须 已完成；reopen 仅限活跃区）")
+
+
 def _check_archive(archive_dir, task_type, errors, warnings):
-    """archive 内任务：必须是 已完成（「必达已完成」跨类型不变量 + reopen 归档硬截止），且参与 schema 校验。"""
+    """archive 目录遍历入口（全量）；单任务校验见 _check_archive_entry。"""
     for entry in sorted(archive_dir.iterdir()):
         if not entry.is_dir() or entry.name.startswith("."):
             continue
-        task_rel = f"{task_type}/archive/{entry.name}"
-        check_task_current(entry, task_rel, errors, warnings)
-        cur = entry / "CURRENT.md"
-        if cur.exists():
-            status = (parse_current(cur) or {}).get("status", "")
-            if status != "已完成":
-                errors.append(f"{task_rel}: archive 内状态 '{status}'（archive 必须 已完成；reopen 仅限活跃区）")
+        _check_archive_entry(entry, f"{task_type}/archive/{entry.name}", errors, warnings)
 
 
 # ─── 安全检查 ──────────────────────────────────────────────────────
@@ -464,6 +509,39 @@ SUSPICIOUS_SECRET = re.compile(
     r"xox[baprs]-[A-Za-z0-9-]{10,})"
 )
 
+# URL 内嵌凭证形态（https://user:pass@host）——专扫可提交的 .env（真实地址应放 .env.local）
+ENV_URL_CRED_RE = re.compile(r"https?://[^\s/@:]+:[^\s/@]+@")
+
+
+def _scan_py_danger(py, label, errors):
+    """危险 Git / TLS / stash 模式扫描（label 用于报错定位：全量用文件名、--staged 用相对路径）。"""
+    try:
+        text = py.read_text(encoding="utf-8")
+    except Exception:
+        return
+    # reset --hard：只匹配 git 调用列表形式（不匹配注释里空格分隔的 "reset --hard"）
+    if '"reset", "--hard"' in text or "'reset', '--hard'" in text:
+        errors.append(f"{label}: 含 reset --hard（破坏性 Git）")
+    # CERT_NONE：只匹配实际赋值（不应出现）
+    if "verify_mode = ssl.CERT_NONE" in text:
+        errors.append(f"{label}: 含 CERT_NONE（TLS 证书校验关闭）")
+    # check_hostname = False：实际赋值（workspace-check.py 已跳过，避免字符串误报）
+    if "check_hostname = False" in text:
+        errors.append(f"{label}: 关闭 hostname 校验")
+    # 自动 stash push：git 调用列表形式（已移除）
+    if '"stash", "push"' in text or "'stash', 'push'" in text:
+        errors.append(f"{label}: 含自动 stash push（已移除）")
+
+
+def _scan_secrets(p, label, errors):
+    """明文密钥扫描（只报告 label:行号，不回显正文）。"""
+    try:
+        for i, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+            if SUSPICIOUS_SECRET.search(line):
+                errors.append(f"安全: {label}:{i} 疑似明文密钥（不回显正文）")
+    except Exception:
+        pass
+
 
 def check_security(errors, warnings):
     # 危险 Git / TLS 模式（.tools/*.py）
@@ -471,36 +549,24 @@ def check_security(errors, warnings):
     for py in sorted(TOOLS.glob("*.py")):
         if py.name == "workspace-check.py":
             continue
-        try:
-            text = py.read_text(encoding="utf-8")
-        except Exception:
-            continue
-        # reset --hard：只匹配 git 调用列表形式（不匹配注释里空格分隔的 "reset --hard"）
-        if '"reset", "--hard"' in text or "'reset', '--hard'" in text:
-            errors.append(f"{py.name}: 含 reset --hard（破坏性 Git）")
-        # CERT_NONE：只匹配实际赋值（不应出现）
-        if "verify_mode = ssl.CERT_NONE" in text:
-            errors.append(f"{py.name}: 含 CERT_NONE（TLS 证书校验关闭）")
-        # check_hostname = False：实际赋值（workspace-check.py 已跳过，避免字符串误报）
-        if "check_hostname = False" in text:
-            errors.append(f"{py.name}: 关闭 hostname 校验")
-        # 自动 stash push：git 调用列表形式（已移除）
-        if '"stash", "push"' in text or "'stash', 'push'" in text:
-            errors.append(f"{py.name}: 含自动 stash push（已移除）")
+        _scan_py_danger(py, py.name, errors)
 
-    # 明文密钥扫描（仅 Git 跟踪的项目文档，排除 src/temp/.env.local）
+    # 明文密钥扫描（仅 Git 跟踪的项目文档，排除 src/temp/.env.local；.env 可提交但不得含真实值）
     scan_targets = ["AGENTS.md", "README.md", "HUMAN.md", "WORKFLOW.md", "CHANGELOG.md",
-                    ".tools/INDEX.md"]
+                    ".tools/INDEX.md", ".env"]
     for rel in scan_targets:
         p = ROOT / rel
         if not p.exists():
             continue
-        try:
-            for i, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
-                if SUSPICIOUS_SECRET.search(line):
-                    errors.append(f"安全: {rel}:{i} 疑似明文密钥（不回显正文）")
-        except Exception:
-            pass
+        _scan_secrets(p, rel, errors)
+        if rel == ".env":
+            # URL 内嵌凭证形态（真实地址应放 .env.local）
+            try:
+                for i, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+                    if ENV_URL_CRED_RE.search(line):
+                        errors.append(f"安全: {rel}:{i} URL 内嵌凭证形态（真实地址应放 .env.local，不回显正文）")
+            except Exception:
+                pass
 
 
 # ─── temp 卫生 ─────────────────────────────────────────────────────
@@ -602,9 +668,21 @@ MDLINT_SCOPES = [
 ]
 
 
-def check_markdownlint(errors, warnings, scope=None):
+# MDLINT_SCOPES 的文件级等价判定（--staged 用）：根层 .md 或首段目录在下列集合内
+MDLINT_SCOPE_DIRS = {p.split("/")[0] for p in MDLINT_SCOPES if "/" in p}
+
+
+def _in_mdlint_scope(rel):
+    """暂存文件是否属 markdownlint 显式范围（与全量 MDLINT_SCOPES 口径一致，防 staged 查全量不查的文件）。"""
+    if not rel.endswith(".md"):
+        return False
+    return "/" not in rel or rel.split("/")[0] in MDLINT_SCOPE_DIRS
+
+
+def check_markdownlint(errors, warnings, scope=None, files=None):
     """跑 markdownlint-cli2（npx 免全局装，工具无关）。
-    scope=Path 时只扫该目录下 **/*.md；None 时扫全量（按 MDLINT_SCOPES，见下方）。
+    scope=Path 时只扫该目录下 **/*.md；files=[相对路径] 时只查这些文件（--staged 用）；
+    都为 None 时扫全量（按 MDLINT_SCOPES，见下方）。
     违规默认进 warnings（MDLINT_AS_ERROR=False）；转 error 改 MDLINT_AS_ERROR=True。
     规则真源是 .markdownlint.jsonc（ROOT）。"""
     npx = shutil.which("npx") or shutil.which("npx.cmd")
@@ -629,7 +707,11 @@ def check_markdownlint(errors, warnings, scope=None):
                 return
         except Exception:
             pass  # 版本探测失败不阻断 lint 本身（保持原有行为）
-    if scope is not None:
+    if files is not None:
+        # cli2 位置参数按 glob 解释：路径含 [ ? * 时静默匹配 0 文件且 exit=0；
+        # 前缀 : 声明字面路径（cli2 官方语法），防门禁静默放行
+        globs = [f":{rel}" for rel in files]
+    elif scope is not None:
         try:
             rel = scope.relative_to(ROOT).as_posix()
         except ValueError:
@@ -670,6 +752,52 @@ def check_markdownlint(errors, warnings, scope=None):
         bucket.append(f"{tag}: {f}:{ln} {rule} {msg}")
 
 
+# ─── --staged 暂存集聚焦（lint-staged 式，commit 前机器门禁）────────
+
+def _git_staged_files():
+    """git diff --cached 暂存文件清单（-z 防路径特殊字符切割）；失败返回 None。
+    utf-8 errors="replace"：非 UTF-8 路径会产生替换字符 → 下游 is_file() 为 False 被跳过
+    （本仓路径全 UTF-8，接受的理论边角）。"""
+    try:
+        proc = subprocess.run(
+            ["git", "-C", str(ROOT), "diff", "--cached", "--name-only", "-z"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=30,
+        )
+    except Exception:
+        return None
+    if proc.returncode != 0:
+        return None
+    return [p for p in proc.stdout.split("\0") if p]
+
+
+def _task_dirs_from(rel_paths):
+    """从暂存路径推导涉及的任务目录（story/xxx、story/archive/xxx、workspace-optimize/xxx…）。"""
+    dirs = set()
+    for rel in rel_paths:
+        parts = rel.split("/")
+        if parts[0] not in TASK_REQUIRED or len(parts) < 2:
+            continue
+        if len(parts) >= 3 and parts[1] == "archive":
+            dirs.add("/".join(parts[:3]))
+        else:
+            dirs.add("/".join(parts[:2]))
+    return sorted(dirs)
+
+
+def check_staged_security(rel_paths, errors):
+    """--staged 密钥/危险模式扫描：暂存 .tools/*.py 走危险模式（跳过本工具自引用），
+    其余暂存文本文件（.md/.json/.jsonc/.txt/.sh/.ps1）走明文密钥扫描。"""
+    for rel in rel_paths:
+        p = ROOT / rel
+        if not p.is_file():
+            continue
+        if rel.startswith(".tools/") and rel.endswith(".py"):
+            if p.name != "workspace-check.py":
+                _scan_py_danger(p, rel, errors)
+        elif rel.endswith((".md", ".json", ".jsonc", ".txt", ".sh", ".ps1")):
+            _scan_secrets(p, rel, errors)
+
+
 # ─── main ──────────────────────────────────────────────────────────
 
 def main():
@@ -678,11 +806,52 @@ def main():
                     default="all", help="只检查某个分区")
     ap.add_argument("--task", metavar="REL", default=None,
                     help="限定到单个任务目录（如 workspace-optimize/task-2026-08-11-xxx）；只跑 tasks(schema+产物) + markdownlint，跳过全局检查")
+    ap.add_argument("--staged", action="store_true",
+                    help="lint-staged 式暂存集聚焦：只检查 git diff --cached 的文件"
+                         "（markdownlint / 任务 schema+产物 / links / 密钥扫描按文件跑，"
+                         "WORKFLOW/CHANGELOG 在集时附带版本一致性）；"
+                         "跳过全局分区（worktrees/temp/protocols，收尾按 --task/全量覆盖）")
     args = ap.parse_args()
+
+    if args.staged and (args.task or args.section != "all"):
+        ap.error("--staged 与 --task/--section 互斥")
 
     errors, warnings = [], []
 
-    if args.task:
+    staged = None
+    if args.staged:
+        staged = _git_staged_files()
+        if staged is None:
+            errors.append("--staged: 读取暂存区失败（git diff --cached）")
+        elif not staged:
+            warnings.append("--staged: 暂存区为空，无可检查文件")
+        else:
+            existing = [rel for rel in staged if (ROOT / rel).is_file()]
+            # markdownlint：限显式 lint 范围内的暂存 .md（口径与全量 MDLINT_SCOPES 一致）
+            md_files = [rel for rel in existing if _in_mdlint_scope(rel)]
+            if md_files:
+                check_markdownlint(errors, warnings, files=md_files)
+            # 任务 schema / 产物门禁：从暂存路径推导任务目录（整目录删除无对象可查，跳过）；
+            # archive 任务走 _check_archive_entry 同口径（只查 schema + 必须已完成，不跑产物门禁）
+            for td in _task_dirs_from(staged):
+                tp = ROOT / td
+                if not tp.is_dir():
+                    continue
+                parts = td.split("/")
+                if len(parts) >= 3 and parts[1] == "archive":
+                    _check_archive_entry(tp, td, errors, warnings)
+                    continue
+                check_task_current(tp, td, errors, warnings)
+                cur = tp / "CURRENT.md"
+                status = (parse_current(cur) or {}).get("status", "") if cur.exists() else ""
+                _check_products(tp, td, parts[0], status, errors)
+            # links / 密钥与危险模式（按文件聚焦）
+            check_staged_links(existing, warnings)
+            check_staged_security(staged, errors)
+            # 版本一致性：WORKFLOW/CHANGELOG 在暂存集时附带（两者便宜且常成对改动）
+            if "WORKFLOW.md" in staged or "CHANGELOG.md" in staged:
+                check_versions(errors)
+    elif args.task:
         # 单目录增量模式：任务收尾聚焦用，只验当前任务
         task_path = ROOT / args.task
         if not task_path.is_dir():
@@ -716,7 +885,7 @@ def main():
             check_protocols(errors, warnings)
 
     # 输出
-    scope_label = f"task={args.task}" if args.task else f"section={args.section}"
+    scope_label = "staged" if args.staged else (f"task={args.task}" if args.task else f"section={args.section}")
     print("=" * 60)
     print(f"  workspace-check（{scope_label}）")
     print("=" * 60)

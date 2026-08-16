@@ -9,6 +9,15 @@ type: 工作流变更日志（冷层，仅追溯时读）
 
 倒序排列，最新在上。版本与本日志按**任务**计：一个任务收尾时统一 bump 一次 `WORKFLOW.md` version 并在此追加一条（概括该任务全部工作流变更）；跨任务的独立小修可独立 bump + 一条（口径见 [WORKFLOW.md §8](./WORKFLOW.md)）。
 
+## v0.1.1 — 2026-08-16
+
+v0.1.0 后首批机制迭代：对比体系升级、三个新 skill 接入、命令入口层与 commit 前机器门禁。本批四条主线：
+
+- **对比体系重构**：`workspace-learn` 升级为 `colleague-kb-synthesis`（新增开源参照对象、增量/全量对比模式与定位偏移裁决）；新增 `position/` 定位基准层（同事库/开源参照登记 + `compare/` 对比留痕）；阶段回顾机制闭环 4→5 项（新增定期项节奏核对）。
+- **新 skill 接入与 vendor 治理**：`agents-md-refiner`（项目 AGENTS.md 完善流）、`knowledge-base`（src/ 项目知识库框架，`command/` 单一真源 + 根薄路由）、vendor 接入 `show-me`（会话内展示优先、不自动开浏览器）；`skills-lock.json` 进 git 基线，grilling 更新至上游最新。
+- **命令入口层**：新增 `.agents/commands/` 薄路由 ×12（`/grill-me`、`/learn`、`/review`、`/show-me`、`/workspace-optimize`、`/knowledge-*` ×7）——frontmatter 声明关联 skill + `$ARGUMENTS` 透传，不复制 SKILL 正文。
+- **机器门禁**：workspace-check 新增 `--staged` 暂存集聚焦（lint-staged 式 commit 前门禁，workspace-review 同步接入）；`.env` 纳入明文密钥与 URL 内嵌凭证扫描。
+
 ## v0.1.0 — 2026-08-16
 
 开源模板 v0.1.0 全量入库：机制来自一个实战工作区的验证沉淀，业务中立、开箱即配，适配指南见 [GUIDE.md](./GUIDE.md)。本批四条主线：

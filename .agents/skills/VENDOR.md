@@ -32,7 +32,7 @@ rg -t md "<skill-name 或其命令>" story case tech research
 
 `skills-lock.json` **只锁 remote 源**（可复现性/版本钉是远端的关切）。**local 源 vendor 副本由 git 直接跟踪**（源是本机仓库，更新 = 手动重新复制，同项目自有 skill），不入 lock。
 
-> 模板口径：本仓库**预置**的 vendor 副本（如 `grilling`，来源开源仓库）直接 git 跟踪、随仓库分发——换机 clone 即得，无需先装 CLI；后续用 `skills update` 或手动重装更新后，lock 文件才在本机生成（lock 是环境状态，不进模板基线）。
+> `skills-lock.json`（仓库根，v1 精简格式）**随 git 进基线**：预置 vendor 副本（如 `grilling`）的上游坐标与版本钉随仓库分发——换机 / 受让方经 `skills experimental_install` 还原，`skills update` 更新（更新后提交 lock 变更即可）；`computedHash` 是安装工具口径（≠ 裸 sha256），完整性校验以上游字节比对为准。手动 vendor 的 remote 源副本在 lock 标 `_managed: manual`。
 
 ## 管理命令
 

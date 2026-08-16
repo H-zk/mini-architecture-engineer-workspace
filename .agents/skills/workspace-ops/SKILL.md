@@ -39,7 +39,7 @@ states: [进行中, 已完成]
 | ------ | ---- | --------- | ---- |
 | 审视工作流 | **内置** | 聚焦（如「BACKLOG 消化」「某 skill 压测」；留空=全面） | 否 |
 | 阶段回顾 | **内置** | 重点/锚点（留空=按 `retrospectives/README.md` 自动） | 否 |
-| 学习外部工作区 | **内置** | 学习对象本地路径（= 只读授权）+ 聚焦维度（留空=全面）；流程见 [workspace-learn](../workspace-learn/SKILL.md) | 是（对象路径） |
+| 学习外部工作区 | **内置** | 学习对象本地路径（= 只读授权；同事库/开源参照先按 `position/` 登记）+ 聚焦维度（留空=全面）；流程见 [colleague-kb-synthesis](../colleague-kb-synthesis/SKILL.md) | 是（对象路径） |
 | 知识库加固 | **内置** | 已结 CASE/需求素材 + 结论查询入口（地址/系统）；流程见 [notes-reinforcement](../notes-reinforcement/SKILL.md) | 是（素材+入口） |
 | 维护仓库 | 扩展位 | 提示：模板未内置执行 skill，接入思路见 [GUIDE](../../../GUIDE.md) §3；也可自定义描述直接立项 | - |
 
@@ -49,7 +49,7 @@ states: [进行中, 已完成]
 | -------- | ---------- |
 | 工作流瘦身 / 压测 / 治理审计 | `workspace-grill` |
 | 阶段回顾（执行质量复盘，非 skill 流程） | 方法见 [`retrospectives/README.md`](../../../retrospectives/README.md) |
-| 学习外部工作区（同事库对比，对方有演进历史） | [`workspace-learn`](../workspace-learn/SKILL.md) |
+| 学习外部工作区（同事库/开源参照对比） | [`colleague-kb-synthesis`](../colleague-kb-synthesis/SKILL.md) |
 | 知识库加固（已结 CASE/需求反哺 notes） | [`notes-reinforcement`](../notes-reinforcement/SKILL.md) |
 | 维护仓库 | **未内置**（扩展位）——按 GUIDE §3 自建后登记进本表 |
 
@@ -57,8 +57,9 @@ states: [进行中, 已完成]
 
 - **随意触发**：审视工作流（workspace-grill）——操作者按需发起，每迭代 ≥1 次（唯一 BACKLOG 评估者）。
 - **硬锚点 = 迭代末**：阶段回顾（独占归档批次 / 定下迭代 sprint-version + 周期 / exps 毕业清单确认 / 待对账打捞）。
-- 软链：workspace-learn 跑完建议接一次 workspace-grill（skill 内已内置该提示）。
+- 软链：colleague-kb-synthesis 跑完建议接一次 workspace-grill（skill 内已内置该提示）。
 - 硬依赖：新迭代任务立项依赖回顾定 `sprint-version`（回顾没跑、旧迭代任务留活跃区 = 设计内行为）。
+- **学习源节奏（position/ 登记对象）**：非周期、按操作者提醒触发（[colleague](../../../position/colleague.md) / [open-source](../../../position/open-source.md) 两文件口径）；阶段回顾仅**核对**增量锚点与未裁决轮次积压、不主动发起同步，发现落后 → 立学习任务仍待操作者点名。
 
 ## Outputs（产物约定）
 
