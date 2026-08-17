@@ -13,4 +13,4 @@
 
 > `_env_loader.py` 是脚本共享的 env 加载器（`.env.local`/`.env`，零依赖，优先级 os.environ > .env.local > .env），供你自写的 `.tools/` 脚本 import（用法见 `.tools/env/README.md`）；不单独索引。
 
-> 扩展位：维护仓库 / 工单查询 / 日志查询等接入你自己的基础设施后在此登记（思路见 [GUIDE.md](../GUIDE.md) §1.2/§3）；外部 API 类脚本一律强制 TLS + hostname 校验 + 最小 scope PAT + 禁重定向（见 AGENTS.md「工具安全」）。
+> 扩展位：维护仓库 / 工单查询 / 日志查询等接入你自己的基础设施后在此登记（思路见 [GUIDE.md](../GUIDE.md) §3）；外部 API 类脚本一律强制 TLS + hostname 校验 + 最小 scope PAT + 禁重定向（见 AGENTS.md「工具安全」）。

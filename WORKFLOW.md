@@ -1,7 +1,7 @@
 ---
 created-at: 2026-07-04
-updated-at: 2026-08-16
-version: 0.1.1
+updated-at: 2026-08-17
+version: 0.1.2
 owner: architecture-engineer-workspace
 ---
 

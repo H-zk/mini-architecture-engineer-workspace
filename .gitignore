@@ -17,6 +17,9 @@ temp/*
 .claude/settings.local.json
 .codex/config.toml
 
+# ZCode 会话产物（plans 计划文件、skills CLI 误写的副本目录；ZCode 直读 .agents/skills 真源）
+.zcode/
+
 # Claude Code skills 桥（.claude/skills/ → .agents/skills/ 的 junction）
 # Windows 下 symlink 需管理员权限 → 改用 junction（mklink /J，无需特殊权限）。
 # Claude Code 原生只发现 .claude/skills/，经此 junction 重定向到单一真源 .agents/skills/。

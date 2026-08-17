@@ -1,7 +1,7 @@
 ---
 name: workspace-ops
 description: 工作区迭代优化（#workspace-optimize / #工作区优化）任务总入口与生命周期单一真源：定期维护菜单（内置 4 项 + 扩展位 1 项）与两步交互、按内容路由到对应 skill（审视工作流 / 阶段回顾 / 学习外部工作区 / 知识库加固）、两态状态机与 reopen 协议、产物约定。立项后先读本 skill 再路由；业务工作不走本标签。
-updated-at: 2026-08-16
+updated-at: 2026-08-17
 triggers:
   - "#workspace-optimize"
   - "#工作区优化"
@@ -59,7 +59,6 @@ states: [进行中, 已完成]
 - **硬锚点 = 迭代末**：阶段回顾（独占归档批次 / 定下迭代 sprint-version + 周期 / exps 毕业清单确认 / 待对账打捞）。
 - 软链：colleague-kb-synthesis 跑完建议接一次 workspace-grill（skill 内已内置该提示）。
 - 硬依赖：新迭代任务立项依赖回顾定 `sprint-version`（回顾没跑、旧迭代任务留活跃区 = 设计内行为）。
-- **学习源节奏（position/ 登记对象）**：非周期、按操作者提醒触发（[colleague](../../../position/colleague.md) / [open-source](../../../position/open-source.md) 两文件口径）；阶段回顾仅**核对**增量锚点与未裁决轮次积压、不主动发起同步，发现落后 → 立学习任务仍待操作者点名。
 
 ## Outputs（产物约定）
 

@@ -1,7 +1,6 @@
 ---
 name: knowledge-base
 description: 通用知识库管理技能。当需要初始化项目业务知识文档、在代码变更后记录增量知识、定期校验文档与代码一致性、重构知识库结构、或迭代优化 skill 自身时使用此技能。通过 /knowledge-create、/knowledge-update、/knowledge-merge-temp、/knowledge-improve、/knowledge-check、/knowledge-refactor、/knowledge-evolve 命令操作。
-updated-at: 2026-08-16
 ---
 
 # 知识库管理技能

@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-16
+updated-at: 2026-08-17
 type: 项目 Skill vendor 管理规范
 ---
 
@@ -45,6 +45,8 @@ skills add <owner>/<repo> --skill <name> --copy -y     # remote 源装（入 loc
 skills update                                          # 更新 lock 内的 remote skill
 skills experimental_install                            # 从 skills-lock.json 还原 remote skill（换机）
 ```
+
+> **安装后清理（skills CLI 多落点副作用）**：CLI 会向检测到的各 agent 目录写副本——`.claude/skills/`（真目录，**顶掉 junction 桥**）、`.zcode/skills/` 等。约定**skill 单一真源 = `.agents/skills/`，不用 `.zcode` 等专属目录**：每次 `skills add/update` 后三步——①删 `.claude/skills` 真目录副本，重跑 `.tools/skill-bridge/link-claude-skills.ps1` 重建桥；②删 `.zcode/skills` 等 agent 副本目录（`.zcode/` 已 gitignore）；③`python .tools/workspace-check.py --section skills` 复核（skill 真源单一性门禁：副本目录或非 junction 桥即 error，误写逃不过下一次全量检查）。
 
 ## 安装后安全确认（每次 vendor 安装/更新后）
 

@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-16
+updated-at: 2026-08-17
 type: 项目 Skill 索引
 maintainer: AI（人类 review）
 ---
@@ -22,8 +22,10 @@ maintainer: AI（人类 review）
 | notes-reinforcement | `#workspace-optimize 知识库加固` / 启动器选中该项 | 知识库加固：已结 CASE/需求 5 步反哺 notes（盲判先行 → 方案 → 对照 → 代码核实 → 反思去重，盲点优先成坑） | [notes-reinforcement/SKILL.md](./notes-reinforcement/SKILL.md) |
 | knowledge-base | `/knowledge-*` 命令族（create / update / merge-temp / improve / refactor / check / evolve） | src/ 项目级知识库管理框架：项目 `AGENTS.md ## 知识库` 章节声明结构（skill 不硬编码业务），主文档 + temp/ 增量笔记全生命周期；**仅服务 `src/` 下代码项目，不用于本工作区 `notes/`**（本区走 notes-reinforcement，防双载） | [knowledge-base/SKILL.md](./knowledge-base/SKILL.md) |
 | agents-md-refiner | 语义命中（初始化/补全/精简项目 AGENTS.md）；feat 调研环节目标仓 AGENTS.md 缺失/过时时按需提议 | 项目 AGENTS.md 完善流：分析代码提炼对 Agent 真正必要的约定（P0/P1/P2 探索清单 + 章节规范 + ≤200 行篇幅控制），诊断报告经操作者确认后更新 | [agents-md-refiner/SKILL.md](./agents-md-refiner/SKILL.md) |
+| guide | 「新手引导」「快速适配」「处理 GUIDE」/ `/guide`；首次会话闸门（AGENTS `onboard-state: 待引导`）强制触发 | 新手引导流：业务范围定调（单业务/产品线/公司全业务）→ 环境与仓库 → 占位落填 → 首任务验证，适配完成后 GUIDE 缩为退役存根 + 引用清理（可选连带退役自身）；明确跳过 = `已跳过` 永久豁免 | [guide/SKILL.md](./guide/SKILL.md) |
 
 > 扩展位（维护仓库）模板未内置 skill，接入思路见 [GUIDE.md](../../GUIDE.md) §3；接入后在此表登记并同步 `workspace-ops` 路由表。
+> `updated-at` 约定：**模板原生 skill** 带 `updated-at`、随改 bump（编辑纪律见 AGENTS「编辑文档」）；**引入型 skill 保持引入形态、不带该字段**（vendor：grilling / show-me，见 [VENDOR.md](./VENDOR.md)；配套引入：knowledge-base / agents-md-refiner）——bump 规则只作用于带该字段的文档。
 
 ## vendor 的第三方 skill
 
@@ -35,8 +37,8 @@ vendor 判定标准、检测命令、lock 关系、管理命令、安装后安�
 | show-me | 语义命中：讲解/可视化类任务（「讲清楚」「一眼看懂」「画个图」）；描述触发灵敏，自动加载即可，无需手动 | `github.com/humanlayer/skills`（**remote**） | ✅（`skills-lock.json` 进基线；更新经 `skills update`） |
 
 > vendor skill **随源、不改骨架**（含上游的 lint 风格差异，如代码块语言标记）——保持与上游逐字节一致是完整性校验的前提（见 [VENDOR.md](./VENDOR.md)）；`.agents/` 本就不在 workspace-check 的 markdownlint 扫描范围。
-> 安全确认回填（四步见 [VENDOR.md](./VENDOR.md)）：grilling（2026-08-16）内容审查 ✓（无 URL / 外发 / 凭证 / 注入模式；同日经授权 `experimental_install` 更新至上游最新，增量审查 ✓ 仅标点/措辞）、文件清单 ✓（仅 SKILL.md + agents/openai.yaml）、完整性 ✓（安装直取上游，lock hash 同步）；生成物审查不适用（会话内协议，无文件产出）。
-> show-me 使用边界（注脚覆盖上游「生成后自动打开」默认）：默认**会话内展示**（Mermaid / 伪代码 / 表格等内联形式优先）；仅操作者明确要可视化报告时才生成 HTML（自包含、只落 `temp/`、不外链）；**任何情况不自动打开浏览器**，只报路径由操作者自访。安全确认（2026-08-16）：内容审查 ✓（纯指导，无 URL / 外发 / 凭证 / 注入模式）、文件清单 ✓（仅 SKILL.md）、完整性 ✓（经授权安装，副本与上游逐字节一致）；生成物审查待首次真实使用，补齐后更新本注。
+> 安全确认回填（四步见 [VENDOR.md](./VENDOR.md)）：grilling（2026-08-16）内容审查 ✓（无 URL / 外发 / 凭证 / 注入模式）、文件清单 ✓（仅 SKILL.md + agents/openai.yaml）；**2026-08-17 上游比对 ✓**——经 skills CLI 重装恢复上游原版（此前源副本含 3 处本地标点改动、违反「随源逐字节一致」，lock 同步 `a16b2f66`；CLI 曾向 `.claude/skills`（顶掉 junction）与 `.zcode/skills` 误写真副本，已清理并重建桥、`.zcode/` 进 gitignore）；生成物审查待首次真实使用，补齐后更新本注。
+> show-me 使用边界（注脚覆盖上游「生成后自动打开」默认）：默认**会话内展示**（Mermaid / 伪代码 / 表格等内联形式优先）；仅操作者明确要可视化报告时才生成 HTML（自包含、只落 `temp/`、不外链）；**任何情况不自动打开浏览器**，只报路径由操作者自访。安全确认（2026-08-16）：内容审查 ✓（纯指导，无 URL / 外发 / 凭证 / 注入模式）、文件清单 ✓（仅 SKILL.md）；完整性 = 源自经验证的上游一致副本字节复制，本仓直取上游 raw 比对待授权、生成物审查待首次真实使用，补齐后更新本注。
 
 ## references/ 子目录约定（渐进披露）
 

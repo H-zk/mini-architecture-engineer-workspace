@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-16
+updated-at: 2026-08-17
 owner: architecture-engineer-workspace
 type: 工作流变更日志（冷层，仅追溯时读）
 ---
@@ -8,6 +8,15 @@ type: 工作流变更日志（冷层，仅追溯时读）
 # CHANGELOG
 
 倒序排列，最新在上。版本与本日志按**任务**计：一个任务收尾时统一 bump 一次 `WORKFLOW.md` version 并在此追加一条（概括该任务全部工作流变更）；跨任务的独立小修可独立 bump + 一条（口径见 [WORKFLOW.md §8](./WORKFLOW.md)）。
+
+## v0.1.2 — 2026-08-17
+
+v0.1.1 后第二批迭代：新手引导闭环、GUIDE 易用性重构、vendor 真源治理与口径收敛（含 workspace-review 评审轮裁决）。本批四条主线：
+
+- **新手引导机制**：新增 `guide` skill + `/guide` 命令 + AGENTS frontmatter `onboard-state` 闸门（待引导 → 已完成/已跳过，跨会话状态承载；跳过不影响纯任务协作）——业务范围定调 → 环境与仓库 → 占位落填 → 首任务验证，适配完成后 GUIDE 缩为退役存根 + 引用清理（可选连带退役 skill 自身）；README / HUMAN / GUIDE 同步挂快速通道入口。
+- **GUIDE 四段式重构**：「三步上手」→ 环境与仓库 / 五类任务教程（按上手顺序，`#tech` 零前置首跑）/ 其他 / 占位清单总表；工单系统接入从 CASE 前置降级为可选增强（任一任务类型可用、CASE 来源渠道不限——工单/消息群/邮件皆合法），case-troubleshoot 与 customer-report 措辞同步。
+- **vendor 真源治理**：grilling 经 skills CLI 重装恢复上游原版（此前源副本含 3 处本地标点改动、违反随源逐字节一致，lock 同步 `a16b2f66`）；CLI 多落点副作用回收——`.zcode/` 进 gitignore、workspace-check 新增 `--section skills` 真源单一性门禁（禁 `.zcode`/`.codex` 副本目录 + `.claude/skills` 桥 realpath 校验）、VENDOR.md 增「安装后清理」三步 SOP。
+- **口径收敛（评审轮裁决）**：引入型 skill（vendor：grilling/show-me；配套引入：knowledge-base/agents-md-refiner）`updated-at` 约定成文于 skills INDEX（不带该字段、保持引入形态；模板原生 skill 带并随改 bump）；学习源节奏口径回归 `position/` 登记表（workspace-ops 去双写、retrospectives 指针同步）；GUIDE 维护菜单项数修正（内置 4 + 扩展位 1）；`.tools/INDEX.md` 恢复 `--task`/`--staged` 能力描述。
 
 ## v0.1.1 — 2026-08-16
 

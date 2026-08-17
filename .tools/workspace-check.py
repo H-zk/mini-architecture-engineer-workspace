@@ -32,6 +32,7 @@ warning 类（证据闭环 / 文档漂移 / markdownlint 违规）首版简化�
   python .tools/workspace-check.py --section versions
   python .tools/workspace-check.py --section temp
   python .tools/workspace-check.py --section worktrees
+  python .tools/workspace-check.py --section skills
   python .tools/workspace-check.py --section markdownlint
   python .tools/workspace-check.py --section links
   python .tools/workspace-check.py --section protocols
@@ -40,6 +41,7 @@ warning 类（证据闭环 / 文档漂移 / markdownlint 违规）首版简化�
                                                # 只检查 git diff --cached 的文件，与收尾门禁互补）
 """
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -629,6 +631,30 @@ def check_worktrees(errors, warnings):
             )
 
 
+# ─── skill 真源单一性（.agents/skills 单一真源；防第三方工具副本漂移）──
+
+# 禁止的 agent 专属 skills 副本目录（skills CLI 等会向检测到的 agent 目录写副本，单一真源之外全是漂移）
+FORBIDDEN_SKILL_DIRS = [".zcode/skills", ".codex/skills"]
+
+def check_skill_sources(errors, warnings):
+    """skills 单一真源 = `.agents/skills/`：①禁 agent 专属副本目录（skills CLI 误写）；
+    ②`.claude/skills` 存在时必须是指向 `.agents/skills` 的 junction/symlink（真目录副本会顶掉桥）。
+    `.claude/skills` 缺失 = 换机/受让方未重建桥，属正常不报（重建见 .tools/skill-bridge/）。"""
+    agents = ROOT / ".agents" / "skills"
+    for rel in FORBIDDEN_SKILL_DIRS:
+        if (ROOT / rel).exists():
+            errors.append(
+                f"skill 真源: {rel}/ 存在（agent 专属 skills 副本，单一真源应为 .agents/skills/；"
+                f"skills CLI 误写，删除该目录——清理 SOP 见 VENDOR.md「管理命令」）"
+            )
+    bridge = ROOT / ".claude" / "skills"
+    if bridge.exists() and os.path.realpath(bridge) != os.path.realpath(agents):
+        errors.append(
+            "skill 真源: .claude/skills 不是指向 .agents/skills 的 junction/symlink"
+            "（真目录副本顶掉了桥；删副本后跑 .tools/skill-bridge/link-claude-skills.ps1 重建）"
+        )
+
+
 # ─── markdownlint（工具无关机器门禁）──────────────────────────────
 
 MDLINT_LINE_RE = re.compile(
@@ -802,7 +828,7 @@ def check_staged_security(rel_paths, errors):
 
 def main():
     ap = argparse.ArgumentParser(description="工作区一致性只读检查")
-    ap.add_argument("--section", choices=["all", "tasks", "security", "versions", "temp", "worktrees", "markdownlint", "links", "protocols"],
+    ap.add_argument("--section", choices=["all", "tasks", "security", "versions", "temp", "worktrees", "skills", "markdownlint", "links", "protocols"],
                     default="all", help="只检查某个分区")
     ap.add_argument("--task", metavar="REL", default=None,
                     help="限定到单个任务目录（如 workspace-optimize/task-2026-08-11-xxx）；只跑 tasks(schema+产物) + markdownlint，跳过全局检查")
@@ -877,6 +903,8 @@ def main():
             check_temp(errors, warnings)
         if args.section in ("all", "worktrees"):
             check_worktrees(errors, warnings)
+        if args.section in ("all", "skills"):
+            check_skill_sources(errors, warnings)
         if args.section in ("all", "markdownlint"):
             check_markdownlint(errors, warnings)
         if args.section in ("all", "links"):

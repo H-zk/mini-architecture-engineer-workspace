@@ -1,7 +1,6 @@
 ---
 name: agents-md-refiner
 description: 用来完善项目 AGENTS.md 的通用技能。当需要初始化新项目的 AGENTS.md、审查并补全已有 AGENTS.md 的遗漏项、或精简冗余内容时使用此技能。适用于任何语言和框架的项目。通过分析项目实际代码实现，提炼对 Agent 开发真正必要的编码约定、架构模式和踩坑点，生成精炼且可操作的 AGENTS.md。
-updated-at: 2026-08-16
 ---
 
 # AGENTS.md 完善技能
