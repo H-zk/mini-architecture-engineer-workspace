@@ -25,7 +25,7 @@ maintainer: AI（人类 review）
 | guide | 「新手引导」「快速适配」「处理 GUIDE」/ `/guide`；首次会话闸门（AGENTS `onboard-state: 待引导`）强制触发 | 新手引导流：业务范围定调（单业务/产品线/公司全业务）→ 环境与仓库 → 占位落填 → 首任务验证，适配完成后 GUIDE 缩为退役存根 + 引用清理（可选连带退役自身）；明确跳过 = `已跳过` 永久豁免 | [guide/SKILL.md](./guide/SKILL.md) |
 
 > 扩展位（维护仓库）模板未内置 skill，接入思路见 [GUIDE.md](../../GUIDE.md) §3；接入后在此表登记并同步 `workspace-ops` 路由表。
-> `updated-at` 约定：**模板原生 skill** 带 `updated-at`、随改 bump（编辑纪律见 AGENTS「编辑文档」）；**引入型 skill 保持引入形态、不带该字段**（vendor：grilling / show-me，见 [VENDOR.md](./VENDOR.md)；配套引入：knowledge-base / agents-md-refiner）——bump 规则只作用于带该字段的文档。
+> `updated-at` 约定：**模板原生 skill** 带 `updated-at`、随改 bump（编辑纪律见 AGENTS「编辑文档」）；**引入型 skill 保持引入形态、不带该字段**——判定以仓库根 `skills-lock.json` 登记为准（现 grilling / show-me，规范见 [VENDOR.md](./VENDOR.md)）；lock 外的 skill（借鉴落地如 knowledge-base / agents-md-refiner、自建）均属模板原生，frontmatter 带 `updated-at`。bump 规则只作用于带该字段的文档。
 
 ## vendor 的第三方 skill
 

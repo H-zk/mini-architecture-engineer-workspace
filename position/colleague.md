@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-16
+updated-at: 2026-08-17
 type: 同事项目同步
 maintainer: 清单由人类维护 / 同步记录由 Agent 维护
 触发: 按人类提醒执行（非周期性，不主动触发）
