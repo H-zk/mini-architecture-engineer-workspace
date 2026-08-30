@@ -16,6 +16,7 @@ description: 重构知识库结构。当知识库变得复杂、混乱或业务�
 ## 触发条件
 
 本命令通常在以下情况下被触发：
+
 - `/knowledge-check` 检测到知识库结构需要重构，并已生成重构计划
 - 用户主动发现知识库结构不合理
 - 项目经历重大业务重组（模块合并/拆分）
@@ -46,7 +47,8 @@ description: 重构知识库结构。当知识库变得复杂、混乱或业务�
 对每个需要的操作，明确说明：
 
 **拆分操作**：
-```
+
+```text
 拆分：notes/05-user-management.md
   → notes/05-user-auth.md    （认证相关：登录/注册/权限）
   → notes/05b-user-profile.md （用户信息相关：资料/设置/偏好）
@@ -54,14 +56,16 @@ description: 重构知识库结构。当知识库变得复杂、混乱或业务�
 ```
 
 **合并操作**：
-```
+
+```text
 合并：notes/03-auth-permissions.md + notes/04-user-roles.md
   → notes/03-user-access.md
   原因：两者业务高度关联，且原始文档都较小
 ```
 
 **重组操作**：
-```
+
+```text
 重组：调整编号和文件名
   05-user-auth.md       → 05-user-auth.md（不变）
   05b-user-profile.md   → 06-user-profile.md（重编号）
@@ -99,7 +103,7 @@ description: 重构知识库结构。当知识库变得复杂、混乱或业务�
 
 ### 5. 输出结果
 
-```
+```text
 知识库重构完成：
   新增：05-user-auth.md, 06-user-profile.md
   删除：05-user-management.md
@@ -109,7 +113,7 @@ description: 重构知识库结构。当知识库变得复杂、混乱或业务�
 
 ## 示例
 
-```
+```bash
 /knowledge-refactor                              # 交互式：分析 → 方案 → 确认 → 执行
 /knowledge-refactor --plan-only                  # 只生成重构计划文件
 /knowledge-refactor --from-plan temp/knowledge-refactor-2026-05-22.md  # 按计划执行

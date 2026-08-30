@@ -16,6 +16,7 @@ description: 将 notes/temp/ 下的增量笔记汇总合并回对应的主文档
 ## 触发条件
 
 本命令在以下情况下应被主动建议或执行：
+
 - `notes/temp/` 下的文件数 ≥ 5
 - 用户主动要求汇总
 - 用户通过 `/knowledge-merge-temp` 命令触发
@@ -31,6 +32,7 @@ description: 将 notes/temp/ 下的增量笔记汇总合并回对应的主文档
 ### 2. 读取并解析
 
 对每个 temp 文件：
+
 1. 读取文件内容
 2. 提取 `## 变更类型` 字段，记录变更类型标签
 3. 提取 `## 关联主文档` 字段，确定目标主文档路径和章节
@@ -39,6 +41,7 @@ description: 将 notes/temp/ 下的增量笔记汇总合并回对应的主文档
 ### 3. 按主文档分组
 
 将 temp 文件按目标主文档分组。如果有 temp 文件指向不存在的主文档：
+
 - 报告错误
 - 跳过该 temp 文件（不删除）
 
@@ -81,6 +84,7 @@ description: 将 notes/temp/ 下的增量笔记汇总合并回对应的主文档
 ### 7. 输出结果
 
 报告：
+
 - 已合并的 temp 文件列表
 - 更新的主文档列表
 - 失败/跳过的文件及原因（如有）
@@ -88,7 +92,7 @@ description: 将 notes/temp/ 下的增量笔记汇总合并回对应的主文档
 
 ## 示例
 
-```
+```bash
 /knowledge-merge-temp              # 合并所有 temp 文件
 /knowledge-merge-temp 03           # 只合并 03-xxx.md
 /knowledge-merge-temp --dry-run    # 预览合并计划

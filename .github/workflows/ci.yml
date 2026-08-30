@@ -1,0 +1,26 @@
+name: workspace-check
+
+# 机器门禁的推送级托底：markdownlint / 任务状态机 / 链接 / 密钥扫描（errors=0 门禁，
+# warnings 不阻塞）。markdownlint-cli2 由 workspace-check.py 经 npx 拉取固定版本。
+# 个人工作区不需要 CI 时，删除 .github/ 目录即可，本地门禁不受影响。
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  workspace-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run workspace-check
+        run: python .tools/workspace-check.py

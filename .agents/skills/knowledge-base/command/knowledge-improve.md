@@ -42,7 +42,7 @@ description: 根据最新代码重新更新已有的知识库主文档，确保�
    - 新增的状态管理字段和方法
    - 新增的模块/组件
    - 新增的 API 接口
- 3. 识别文档中**已不存在的旧功能**：
+3. 识别文档中**已不存在的旧功能**：
    - 已删除的路由/视图/页面
    - 已移除的状态管理字段
    - 已删除的模块或工具函数
@@ -75,7 +75,7 @@ last-updated: {当天日期}
 
 输出每个文档的更新摘要：
 
-```
+```text
 notes/05-user-management.md:
   ✅ 新增：批量导出流程（services/batch_export.py）
   ✅ 更新：API 层新增 3 个接口
@@ -92,7 +92,7 @@ notes/05-user-management.md:
 
 ## 示例
 
-```
+```bash
 /knowledge-improve              # 更新所有主文档
 /knowledge-improve 05           # 只更新 05-user-management.md
 /knowledge-improve 02-api-reference.md  # 指定完整文件名

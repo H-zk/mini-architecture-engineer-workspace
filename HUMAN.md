@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-17
+updated-at: 2026-08-30
 ---
 
 # HUMAN — 操作者 SOP
@@ -18,7 +18,7 @@ updated-at: 2026-08-17
 
 ### 0.2 最小上手（零凭证即可协作）
 
-1. 装一个支持项目级 skills 的 AI 工具，用它**打开本工作区** → `.agents/skills/` 里的项目 skill 自动加载，无需手动安装。
+1. 装一个支持项目级 skills 的 AI 工具，用它**打开本工作区** → `.agents/skills/` 里的项目 skill 自动加载，无需手动安装。工具兼容速查：支持项目级 skills 的工具直接可用；**claude 需先跑 `.tools/skill-bridge/` 的 junction 桥脚本**（首次 clone 就要跑，不只换机器时）；codex / copilot 等无自动发现的工具靠 AGENTS 指引按需读取，同样可用。
 2. 发一个标签任务试试，例如 `#tech <业务问题>` → AI 自动建目录、查 `notes/`、调研、产出结论。
 
 > **纯任务协作不需要任何凭证**。AI 只编辑文件、不提交；你 review 后手动 `git commit/push`。首次适配（环境与仓库 / 五类任务接入）见 [GUIDE.md](./GUIDE.md)；想更快就对 AI 说「新手引导」或发 `/guide`，它带你一次走完。**拉下仓库后的首次会话，AI 会自动发起新手引导**（业务范围定调起步）；明确说「跳过」则不再打扰，随时 `/guide` 回来。
@@ -41,7 +41,7 @@ updated-at: 2026-08-17
 
 ### 0.5 验证（确认就绪）
 
-发一个 `#tech` 真问题（见 [GUIDE](./GUIDE.md) §2.1），跑通即就绪；或发 `#workspace-optimize 审视工作流` 让 AI 做一次只读审计。
+发一个 `#tech` 真问题（见 [GUIDE](./GUIDE.md) §2.1），跑通即就绪（完整判据另含全量机器检查 `errors=0`——新手引导自动跑，手动适配自查一次）；或发 `#workspace-optimize 审视工作流` 让 AI 做一次只读审计。
 
 ### 0.6 Skills 的自包含结构（本机配置）
 
@@ -65,7 +65,7 @@ updated-at: 2026-08-17
 
 ## 2. 定期维护
 
-**维护项总览**（内置 4 项 + 扩展位 1 项）：
+**维护项总览**（内置 5 项）：
 
 | 维护项 | 状态 | 节奏 |
 | ------ | ---- | ---- |
@@ -73,7 +73,7 @@ updated-at: 2026-08-17
 | 阶段回顾 | **内置** | 硬锚点 = 迭代末（独占归档批次 / 定下迭代 sprint-version） |
 | 学习外部工作区（colleague-kb-synthesis） | **内置** | 按需；给出对方工作区本地路径 = 只读授权；同事库/开源参照登记层 = `position/`（清单你维护，记录 AI 维护） |
 | 知识库加固（notes-reinforcement） | **内置** | 按需；攒了已结 CASE/需求素材时触发 |
-| 维护仓库 | **扩展位**（模板未内置） | 接入思路见 [GUIDE](./GUIDE.md) §3 |
+| 维护仓库（repo-maintenance） | **内置** | 五阶段独立显式授权（对账/同步/发现/clone/迁移）；配套脚本与内网平台【模板占位】，接入后全量启用，见 `.agents/skills/repo-maintenance/SKILL.md` |
 
 ### 2.1 工作流瘦身（workspace-grill）
 
@@ -81,7 +81,7 @@ updated-at: 2026-08-17
 
 ### 2.2 阶段回顾（定期复盘执行质量）
 
-**硬锚点 = 迭代末**，发 `#workspace-optimize 做一次阶段回顾`：AI 锚定上一次回顾的 commit 到当前 HEAD，复盘「执行质量」（做对 / 做快 / 做扎实），产出 `retrospectives/retro-YYYY-MM-DD.md`。方法与节点锚见 [`retrospectives/README.md`](./retrospectives/README.md)。回顾为 BACKLOG / WORKFLOW 调整提供基于事实的输入，但遵循「宁可晚进」。
+**硬锚点 = 迭代末**，发 `#workspace-optimize 做一次阶段回顾`：AI 锚定上一次回顾的 commit 到当前 HEAD，复盘「执行质量」（做对 / 做快 / 做扎实），产出 `retrospectives/retro-YYYY-MM-DD.md`。方法与节点锚见 [`retrospectives/README.md`](./retrospectives/README.md)。回顾为 BACKLOG / WORKFLOW 调整提供基于事实的输入，但遵循「宁可晚进」。回顾时顺带确认 [ARCHITECTURE.md](./ARCHITECTURE.md) §4 五维评分快照（迭代末收敛）。
 
 ---
 
@@ -128,9 +128,11 @@ AI 写的文档（story/case/tech/research 下的产出）需要你确认：
 - 是否需要沉淀到 `exps/` 或 `notes/`
 - 任务目录是否可以归档
 
+**提交前仪式（工作区变动，尤其含 workspace-optimize 任务的批次）**：提交前手动发起一次 workspace-review 会话（对 AI 说「review 工作区的改动」），走完结构化 review 流程（状态口径 → 分主题反馈 → 证据门槛 → `--staged` 机器检查）后再提交——比肉眼扫 diff 更有把控感，也是「人在环中」在提交边界的落点。触发语与流程见 `.agents/skills/workspace-review/SKILL.md`。
+
 ### 4.3 收尾
 
-对 AI 说「这个任务完成了，收尾吧」→ AI 会执行收尾门禁（确认制完成 → 沉淀询问 → 工作区校验 errors=0）、更新 `CURRENT.md` 状态、更新 INDEX。
+对 AI 说「这个任务完成了，收尾吧」→ AI 会执行收尾门禁（确认制完成 → 沉淀询问 → 工作区校验 errors=0）、更新 `CURRENT.md` 状态、更新 INDEX。**业务任务会反问你对本任务的看法**（做对什么 / 有无返工 / 验证情况），用于 `ARCHITECTURE.md` 评分观察——case/tech/research 收尾时是 grilling 反问的**阻断性门禁**（答完才继续收尾）；feat 主记录已前移至「审核中 → 验证中」转态时（非阻断提醒），收尾时仅简单咨询补充验证期信号。迭代末回顾时再顺带确认五维评分快照（§2.2）。
 
 ---
 

@@ -1,7 +1,7 @@
 ---
 name: knowledge-base
 description: 通用知识库管理技能。当需要初始化项目业务知识文档、在代码变更后记录增量知识、定期校验文档与代码一致性、重构知识库结构、或迭代优化 skill 自身时使用此技能。通过 /knowledge-create、/knowledge-update、/knowledge-merge-temp、/knowledge-improve、/knowledge-check、/knowledge-refactor、/knowledge-evolve 命令操作。
-updated-at: 2026-08-17
+updated-at: 2026-08-29
 ---
 
 # 知识库管理技能
@@ -14,7 +14,7 @@ updated-at: 2026-08-17
 
 ### 知识库目录
 
-```
+```text
 notes/                  # 知识库根目录（项目根目录下）
   {编号}-{名称}.md      # 主文档：按业务/技术域组织的结构化知识
   ...
@@ -28,6 +28,7 @@ notes/                  # 知识库根目录（项目根目录下）
 ### 与 AGENTS.md 的关系
 
 项目的 `AGENTS.md` 中必须包含 `## 知识库` 章节，声明：
+
 1. 知识库目录位置
 2. 主文档列表（编号 + 文件名 + 说明）
 3. 文档格式规范
@@ -78,7 +79,7 @@ notes/                  # 知识库根目录（项目根目录下）
 last-checked: 2026-05-22
 last-updated: 2026-05-22
 -->
-```
+```text
 
 - `/knowledge-check` 执行时会读取并更新 `last-checked`
 - `/knowledge-improve` 执行时会更新 `last-updated`
@@ -110,6 +111,7 @@ fs.writeFileSync(fp, content, 'utf8');
 ## 文档模板与规范
 
 模板和编写规范存放在 skill 的 `references/` 目录下：
+
 - `references/doc-template.md` — 主文档格式模板（含变更历史章节和元数据块）
 - `references/temp-template.md` — temp 增量笔记模板（含变更类型字段）
 - `references/writing-guidelines.md` — 文档编写规范（含交叉引用原则）

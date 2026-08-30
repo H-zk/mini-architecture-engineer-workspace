@@ -1,0 +1,2 @@
+# 防火墙文件：截断根 .editorconfig 向 src/ 嵌套仓穿透（clone 进来的仓以自带配置为准）
+root = true

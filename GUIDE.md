@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-17
+updated-at: 2026-08-30
 type: 模板适配指南（新用户必读）
 ---
 
@@ -32,7 +32,7 @@ grep -rn "【模板占位" --include="*.md" .
 
 - **登记**：`reference/repos.md` 填你的仓库清单（地址、默认分支、标签；人类主写，AI 靠它定位代码）。
 - **接入**：把仓库 **clone 进 `src/<namespace>/<repo>/` 即授权 AI 在该目录工作**（AI 只 clone/pull/编辑，不 commit/push）。已有代码目录不想挪？并存 / junction 两种接法见 [HUMAN](./HUMAN.md) §0.4。
-- **分支约定**：各仓基准分支家族约定（版本/发布职责）建议落一份文档到 `reference/`，供 AI 判定开发分支（占位见 AGENTS「代码视图隔离」）。
+- **分支约定**：各仓基准分支家族约定已内置 [reference/branch-flows.md](./reference/branch-flows.md)（通用 flow 两档 + 各仓登记表）——**各仓条目按你的仓库落填**，AI 判定开发分支以它为真源。
 - clone 后可用 `agents-md-refiner` skill 从代码提炼各仓 `AGENTS.md` 项目规范，AI 访问该仓时优先读。
 
 > 业务侧另有快填两处：`README.md` 首行角色定位、`notes/` 首篇业务术语（AI 遇到不理解的术语会先查这里）。全部待填点见 §4。
@@ -45,7 +45,7 @@ grep -rn "【模板占位" --include="*.md" .
 
 - **是什么**：问业务/技术问题，AI 澄清 → 知识库分层查证（`notes/`/`reference/`/`exps/`；涉及「系统当前如何运行」回 `src/` 代码核实）→ 产出 `answer.md`（结论先行）。
 - **示例**：`#tech XX 模块的缓存策略是什么，现在生效的是哪种`
-- **接入建议**：零前置。跑通即说明工作区就绪。
+- **接入建议**：零前置。跑通即说明工作区就绪（完整就绪判据另含全量机器检查 `errors=0`——走新手引导会自动跑，手动适配可自己跑 `python .tools/workspace-check.py`）。
 
 ### 2.2 `#research` 需求调研
 
@@ -61,29 +61,30 @@ grep -rn "【模板占位" --include="*.md" .
 
 ### 2.4 `#feat` 需求开发
 
-- **是什么**：全链开发流——全景调研 → plan 经你确认才编码 → 交付三件套 → 审核子协议 → 验证三分法（五态 Lifecycle）。
+- **是什么**：全链开发流——规格判定（五维两档）→ 全景调研 → plan 经你确认才编码 → 交付四件套 → 审核子协议 → 验证三分法（五态 Lifecycle）。
 - **示例**：`#feat 给导出接口做异步化改造`
 - **接入建议**：前置 = 相关仓已 clone 进 `src/`（§1.2）+ 分支约定可判定；开发在独立 worktree 进行（AGENTS「代码视图隔离」）。
 
 ### 2.5 `#workspace-optimize` 工作区迭代优化
 
-- **是什么**：工作区自身治理/维护/学习类任务（定期维护菜单内置 4 项 + 扩展位 1 项；业务工作不走此标签）。
+- **是什么**：工作区自身治理/维护/学习类任务（定期维护菜单内置 5 项；业务工作不走此标签）。
 - **示例**：`#workspace-optimize 审视工作流`（workspace-grill 只读审计——也是比 `#tech` 更完整的就绪验证路径）
 
 ## 3. 其他
 
 ### 3.1 模板从哪来（演进关系）
 
-本模板反哺自一个实战工作区——所有机制（执行流 skill、状态机、收尾门禁、经验毕业等）都经过真实任务验证，不是纸面设计。模板线**独立演进**：你 clone 后就是你的独立仓库，与源工作区互不合并；想借鉴对方的后续改进，走「对比借鉴」方式人工挑选落地，不直接 merge。
+本模板反哺自一个实战工作区——所有机制（执行流 skill、状态机、收尾门禁、经验毕业等）都经过真实任务验证，不是纸面设计。模板线**独立演进**：你 clone 后就是你的独立仓库，与源工作区互不合并；想借鉴对方的后续改进，走「对比借鉴」方式人工挑选落地，不直接 merge（你的改进想回流源仓：提 PR 作同事库参考，机制见 [CONTRIBUTE.md](./CONTRIBUTE.md)）。想做得更系统时，用**双维度对比框架**：工作流范式逐维比对（组织主轴、任务与流程管理、真源观念、代码与提交策略、技能加载、防膨胀与可发现、沉淀时机、安全边界）+ 知识侧重（内容分布、抽象层级、实证密度），产出**三向判定**（他有我无 / 我有他优 / 双方等价）——领先面与等价面同样值得确认，防「只看缺漏」的单向视角。
 
 ### 3.2 能力总览
 
-**已内置**（`#workspace-optimize` 维护菜单可触发）：
+**已内置**（`#workspace-optimize` 维护菜单可触发；下表为菜单中的多步骤执行流类能力，全量 5 项见 [HUMAN](./HUMAN.md) §2 总览表）：
 
 | 能力 | 是什么 | skill |
 | ---- | ------ | ----- |
 | 学习外部工作区（同事库对比） | 主动学习一个**有**演进历史（CHANGELOG + 任务历史）的外部工作区：双维度对比（工作流范式 + 知识组织）→ 借鉴清单（带演进证据）→ 你逐条裁决分流；同事库/开源参照可先登记 `position/` | `colleague-kb-synthesis` |
 | 知识库加固 | 用已结 CASE/需求素材系统性反哺 `notes/`：**先盲判后对照**（AI 先凭现有知识给链路结论，再对照素材与代码核实），盲点优先沉淀成坑 | `notes-reinforcement` |
+| 维护仓库 | `src/` 仓库五阶段维护（对账 / 同步 / 发现 / clone / 迁移，各阶段独立授权）；配套脚本与内网平台【模板占位】，按你的环境落地后全量启用 | `repo-maintenance` |
 
 学习外部工作区**只分析不自动落实**（外部路径 = 只读授权、密钥载体不读取、沉淀过「来源中立」转换）；知识库加固经操作者确认后写入 `notes/`。细节见各自 SKILL.md。
 
@@ -95,15 +96,11 @@ grep -rn "【模板占位" --include="*.md" .
 | 工作区改动评审 | 本仓未提交变更的结构化评审 + 按主题拆 commit（每次 commit 前过 `--staged` 机器门禁） | `workspace-review` skill |
 | 项目知识库 | `src/` 各项目知识库全生命周期（建库 / 增量更新 / 一致性校验，`/knowledge-*` 命令族；只管 `src/` 项目，工作区自身 `notes/` 走知识库加固） | `knowledge-base` skill |
 | 项目 AGENTS.md | 分析代码提炼项目级开发约定，初始化 / 补全 / 精简各仓库 `AGENTS.md` | `agents-md-refiner` skill |
+| 外部 skill 选型评估 | 给出 skill 仓库链接要求分析（「适不适合我们」「能不能直接用」）→ 初判 + 深析 + 可选实测 → 裁决留你 | `skill-fit-eval` skill |
+| 外部文章分析 | 给出文章链接要求分析（「结合工作区看看有什么可沉淀」）→ 逐篇骨架提炼对照本区 → 三层结论 + 裁决点 | `external-article-analysis` skill |
 | 方案压测 / 可视化 | grilling（relentless 追问压测 plan/design，见 §3.3）/ show-me（图表化讲解）；vendor 引进、`skills-lock.json` 锁版本随仓分发 | skills `INDEX.md`「vendor」节 |
 
 命令入口：`.agents/commands/` 薄路由（`/workspace-optimize`、`/review`、`/knowledge-create` 等），与 skill 同源、不复制正文。
-
-**扩展位**（模板未内置，按需自建）：
-
-| 扩展位 | 是什么 | 自建思路 |
-| ------ | ------ | -------- |
-| 维护仓库 | `src/` 仓库对账/同步/发现/clone | 写 `.tools/` 脚本对接你的代码托管平台 API（强制 TLS + 最小 scope PAT），配 repo-maintenance 类 skill 分阶段授权执行 |
 
 ### 3.3 可选实践
 
@@ -131,8 +128,10 @@ grep -rn "【模板占位" --include="*.md" .
 | ---- | -------- |
 | `README.md` 首行 + 文档地图 | 工作区角色定位（如「XX 业务后端工程师」）与仓库名 |
 | `AGENTS.md` 首段 | 你服务的业务领域（如「音视频云服务」） |
-| `AGENTS.md`「代码视图隔离」节 | 基准分支判定：按需在 `reference/` 落一份分支约定文档 |
 | `reference/repos.md` | 你的业务仓库清单 |
+| `reference/branch-flows.md` 各仓登记表 | 各仓 flow（centralized / mr-review / 自定义）+ 开发分支 + 分支家族一句话（AGENTS「代码视图隔离」的分支约定占位已由本文件兑现） |
+| `workspace-code-setting/code-workspace-env/README.md` 映射 | worktree 环境文件铺装映射（本地开发所需不进 git 的环境文件，一行一仓；为空则跳过铺装）；模板与生成器说明见该目录 README |
+| `notes/glossary.md`（待建） | 业务域词语契约表：业务定调后首次出现「同一事物多套叫法」返工时建——五列（推荐用语/定义/代码标识/易混词消歧/代码锚点）+ 禁用词清单附录 + 维护规则「新词先查表再造词」 |
 | `WORKFLOW.md` §2.7 | 你的工单/项目管理系统名（迭代规划归它） |
 | `retrospectives/README.md` 节点锚 | 首个迭代号（YYYYMMDD）+ 周期 |
 | `.env` 与 `.tools/env/README.md` | 按你的工具链增删 KEY（真实值只进 `.env.local`） |

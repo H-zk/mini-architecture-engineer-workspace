@@ -1,7 +1,7 @@
 ---
 name: case-troubleshoot
 description: CASE 排查标准流程与证据闭环。当用户发起 #case / #排查 售后 CASE 排查时加载。先锁失败接口，区分已确认事实与高可信假设，宣称「已确认根因」必过证据门槛（高可信假设 + 待验证计划也是合法完成形态）；含两态 Lifecycle（进行中/已完成 + reopen 回边）、conclusion 六分区（非技术结论必填）与可选对客回复 customer-report.md。
-updated-at: 2026-08-17
+updated-at: 2026-08-29
 triggers:
   - "#case"
   - "#排查"
@@ -64,6 +64,7 @@ states: [进行中, 已完成]
 - 修复由其他团队实施或另行排期时，创建关联修复任务，不让调查任务永久阻塞。
 - **完成证据门禁**：约束**证据分级诚实**而非任务状态——「已确认根因」处必过 Gates 门槛（不冒充）、待验证项非空时 conclusion 必含下一步验证计划、INDEX 摘要证据状态不超 conclusion；满足即可完成（「高可信假设 + 待验证计划」收口是合法完成形态）。
 - **review 事件**：case 无独立 review 环节（跨标签机制见 [WORKFLOW §2.6](../../../WORKFLOW.md) 状态机通用协议）；操作者完成确认留痕记 CURRENT 历史正文一句。
+- 架构能力反思（一句触发点）：触发点 = 收尾（→ `已完成`）——规则与各标签触发点单一真源 = [ARCHITECTURE.md](../../../ARCHITECTURE.md) §5 触发点表（阻断）。
 
 ## Outputs（目录产物）
 

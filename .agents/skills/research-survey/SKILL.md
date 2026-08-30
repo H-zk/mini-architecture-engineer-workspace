@@ -1,7 +1,7 @@
 ---
 name: research-survey
 description: 需求调研（#research / #调研）任务执行流：定边界 → src/ 代码锚定现状（无实现也是结论）→ refs.md 收集 → report.md 方案对比与建议。无代码交付，两态 Lifecycle（进行中 → 已完成 + reopen 回边，多阶段演进是设计内行为）。
-updated-at: 2026-08-16
+updated-at: 2026-08-29
 triggers:
   - "#research"
   - "#调研"
@@ -25,8 +25,9 @@ states: [进行中, 已完成]
 - **门禁分层**：
   - research 特有（本 skill 自持）：`report.md` 存在且 DoD 满足（方案对比与建议、结论可追溯、「无实现也是结论」、风险与前提标注）。
   - 跨类型基线（见 WORKFLOW §2.6/§7）：完成前闸门（操作者确认制）+ §7 收尾清单 + 沉淀询问时机 + workspace-check `--task <当前任务>` `errors=0` 事前门禁 + 留痕。
+  - 架构能力反思（一句触发点）：触发点 = 收尾（→ `已完成`）——规则与各标签触发点单一真源 = [ARCHITECTURE.md](../../../ARCHITECTURE.md) §5 触发点表（阻断；reopen 后增量式只补新信号）。
 - **review 事件**：research 无独立 review 环节（跨标签机制见 [WORKFLOW §2.6](../../../WORKFLOW.md) 状态机通用协议）；操作者完成确认留痕记 CURRENT 历史正文一句。
-- **沉淀节奏（与 tech 差异）**：tech 收尾一次问；research 每轮增项都可能产出沉淀，收尾时回顾全会话增量问。
+- **沉淀节奏（与 tech 差异）**：tech 收尾一次问；research 每轮增项都可能产出沉淀，收尾时回顾全会话增量问；**每轮收场附轻量方向盲区自查**（只列本轮新暴露的方向盲区——未覆盖的问题域、未验证的假设，供下轮定边界或 BACKLOG 消化）。
 
 ## Steps
 

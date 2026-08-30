@@ -1,0 +1,28 @@
+# git flow 定义真源（数据文件；生成器与着陆卡渲染的单一真源）
+#
+# 读取方：.tools/sync-worktree-workspace.py（着陆卡 card_rules 渲染 + flow 校验）。
+# 各仓「用哪条 flow + 开发分支」的登记表与 AI 判定规则见 reference/branch-flows.md（人类主写）。
+#
+# 扩展约定：新增一种 flow = 在 flows: 下加条目即可，生成器通用渲染，无需改脚本。
+# card_rules 支持 {task} 占位（渲染时替换为任务 id），其余花括号按字面保留。
+
+default: centralized
+
+flows:
+  centralized:
+    name: 直推开发分支（默认）
+    description: 本地开发（feature 分支只作本地隔离）+ rebase 同步 + push refspec FF 直推开发分支
+    remote_feature: false
+    review_gate: false
+    card_rules: |
+      同步基座：git fetch origin && git rebase origin/<开发分支>
+      合并推送：git push origin HEAD:<开发分支>（ff-only，禁裸 push）
+      feature 分支只作本地开发期隔离、不单独推送
+  mr-review:
+    name: 评审流（MR/PR）
+    description: feature 分支推远端 + MR/PR + 评审通过后合入开发分支（开发分支受保护/需评审时选用）
+    remote_feature: true
+    review_gate: true
+    card_rules: |
+      推送：git push origin HEAD:feature/{task}
+      创建 MR/PR → 评审通过后合入开发分支

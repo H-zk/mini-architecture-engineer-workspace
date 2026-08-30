@@ -1,7 +1,7 @@
 ---
 name: workspace-ops
-description: 工作区迭代优化（#workspace-optimize / #工作区优化）任务总入口与生命周期单一真源：定期维护菜单（内置 4 项 + 扩展位 1 项）与两步交互、按内容路由到对应 skill（审视工作流 / 阶段回顾 / 学习外部工作区 / 知识库加固）、两态状态机与 reopen 协议、产物约定。立项后先读本 skill 再路由；业务工作不走本标签。
-updated-at: 2026-08-17
+description: 工作区迭代优化（#workspace-optimize / #工作区优化）任务总入口与生命周期单一真源：定期维护菜单（内置 5 项）与两步交互、按内容路由到对应 skill（审视工作流 / 阶段回顾 / 学习外部工作区 / 知识库加固 / 维护仓库）、两态状态机与 reopen 协议、产物约定。立项后先读本 skill 再路由；业务工作不走本标签。
+updated-at: 2026-08-29
 triggers:
   - "#workspace-optimize"
   - "#工作区优化"
@@ -33,7 +33,7 @@ states: [进行中, 已完成]
 
 ## 维护菜单与两步交互（单字词启动器规范）
 
-`workspace-optimize` 单字词 → 第一步呈现菜单（内置项 + 扩展位）+ 自定义输入；**选中内置维护项后**第二步按项弹**专属辅助说明**输入（必填项留空会重问；自定义输入直接立项、不进第二步；扩展位选中后提示接入思路、也可直接转入自定义描述立项）：
+`workspace-optimize` 单字词 → 第一步呈现菜单（内置项）+ 自定义输入；**选中内置维护项后**第二步按项弹**专属辅助说明**输入（必填项留空会重问；自定义输入直接立项、不进第二步）：
 
 | 维护项 | 状态 | 第二步追问 | 必填 |
 | ------ | ---- | --------- | ---- |
@@ -41,7 +41,7 @@ states: [进行中, 已完成]
 | 阶段回顾 | **内置** | 重点/锚点（留空=按 `retrospectives/README.md` 自动） | 否 |
 | 学习外部工作区 | **内置** | 学习对象本地路径（= 只读授权；同事库/开源参照先按 `position/` 登记）+ 聚焦维度（留空=全面）；流程见 [colleague-kb-synthesis](../colleague-kb-synthesis/SKILL.md) | 是（对象路径） |
 | 知识库加固 | **内置** | 已结 CASE/需求素材 + 结论查询入口（地址/系统）；流程见 [notes-reinforcement](../notes-reinforcement/SKILL.md) | 是（素材+入口） |
-| 维护仓库 | 扩展位 | 提示：模板未内置执行 skill，接入思路见 [GUIDE](../../../GUIDE.md) §3；也可自定义描述直接立项 | - |
+| 维护仓库 | **内置** | 范围（如「同步 src/」「clone 新仓库」「仓库对账」，留空=对账先行）；流程见 [repo-maintenance](../repo-maintenance/SKILL.md)（五阶段各自独立授权；配套脚本未落地时按其【模板占位】说明执行） | 否 |
 
 ## 路由表（立项后按内容路由，不写独立执行节）
 
@@ -51,7 +51,9 @@ states: [进行中, 已完成]
 | 阶段回顾（执行质量复盘，非 skill 流程） | 方法见 [`retrospectives/README.md`](../../../retrospectives/README.md) |
 | 学习外部工作区（同事库/开源参照对比） | [`colleague-kb-synthesis`](../colleague-kb-synthesis/SKILL.md) |
 | 知识库加固（已结 CASE/需求反哺 notes） | [`notes-reinforcement`](../notes-reinforcement/SKILL.md) |
-| 维护仓库 | **未内置**（扩展位）——按 GUIDE §3 自建后登记进本表 |
+| 维护仓库（src/ 同步 / 发现 / clone / 迁移） | [`repo-maintenance`](../repo-maintenance/SKILL.md) |
+| skill 选型评估（外部 skill 仓单仓定向分析） | [`skill-fit-eval`](../skill-fit-eval/SKILL.md) |
+| 外部文章分析（网页正文逐篇对照本区） | [`external-article-analysis`](../external-article-analysis/SKILL.md) |
 
 ## 维护节奏与依赖
 

@@ -1,7 +1,7 @@
 ---
 name: tech-consult
 description: 技术咨询（#tech / #咨询）任务执行流：澄清问题 → 知识库分层查证（notes/reference/exps 优先，涉及「系统当前如何运行」回 src/ 代码核实）→ answer.md 结论先行。无代码交付，两态 Lifecycle（进行中 → 已完成，单步直达不设 reopen）。
-updated-at: 2026-08-16
+updated-at: 2026-08-29
 triggers:
   - "#tech"
   - "#咨询"
@@ -26,6 +26,7 @@ states: [进行中, 已完成]
   - **tech 特有（本 skill 自持）**：`answer.md` 存在且 DoD 三条满足（结论明确可直接采纳 / 依据可追溯 / 风险与前提假设已标注）。
   - **跨类型基线（见 WORKFLOW §2.6/§7）**：完成前闸门（操作者确认制）+ §7 收尾清单 + 沉淀询问时机 + workspace-check `--task <当前任务>` `errors=0` 事前门禁 + 留痕。
 - **review 事件**：tech 无独立 review 环节（跨标签机制见 [WORKFLOW §2.6](../../../WORKFLOW.md) 状态机通用协议）；操作者完成确认留痕记 CURRENT 历史正文一句。
+- 架构能力反思（一句触发点）：触发点 = 收尾（→ `已完成`）——规则与各标签触发点单一真源 = [ARCHITECTURE.md](../../../ARCHITECTURE.md) §5 触发点表（阻断）。
 
 ## Steps
 

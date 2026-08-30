@@ -1,5 +1,5 @@
 ---
-description: 评审本仓未提交改动（四段式反馈 / 主题化提交）
+description: 评审本仓未提交改动（三段式反馈 / 主题化提交）
 argument-hint: "[review 改动 / 按反馈修复 / 拆 commit]"
 skills: workspace-review
 ---

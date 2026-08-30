@@ -34,6 +34,7 @@ node .agents/skills/knowledge-base/scripts/validate-knowledge.js
 ```
 
 脚本输出 JSON 格式的校验结果，包含：
+
 - 所有文档中引用的文件路径及其存在性
 - temp 目录的文件数量和最旧文件日期
 - 每个文档的 last-checked / last-updated 日期
@@ -100,7 +101,7 @@ Agent 基于脚本结果进行语义层面的分析（代码覆盖率、结构�
 
 #### 3a. 生成检查报告
 
-```
+```text
 知识库健康检查报告（2026-05-22）
 
 📊 总览：
@@ -133,11 +134,13 @@ Agent 基于脚本结果进行语义层面的分析（代码覆盖率、结构�
 #### 3b. 判断是否需要重构
 
 当出现以下情况时，建议执行 `/knowledge-refactor`：
+
 - 有 **2 个以上** 文档标记为 **过长** 或 **职责重叠**
 - 存在明显需要拆分或合并的文档对
 - 整体结构无法反映当前业务模块划分
 
 如果需要重构：
+
 - 生成重构计划文件：`temp/knowledge-refactor-{日期}.md`
 - 在报告中输出计划路径
 - 后续由用户执行 `/knowledge-refactor --from-plan {计划路径}`
@@ -145,6 +148,7 @@ Agent 基于脚本结果进行语义层面的分析（代码覆盖率、结构�
 #### 3c. 全部通过
 
 如果所有文档都健康：
+
 - 更新每个文档的 `last-checked` 元数据为当天日期
 - 输出简短的健康报告
 
@@ -157,7 +161,7 @@ Agent 基于脚本结果进行语义层面的分析（代码覆盖率、结构�
 
 根据检查结果，输出可执行的命令列表：
 
-```
+```text
 建议操作：
   /knowledge-improve 05       # 更新 user-management 文档
   /knowledge-improve 09       # 更新 navigation-and-routing 文档
@@ -176,7 +180,7 @@ Agent 基于脚本结果进行语义层面的分析（代码覆盖率、结构�
 
 ## 示例
 
-```
+```bash
 /knowledge-check              # 检查所有文档，输出完整报告
 /knowledge-check 05           # 只检查 05-user-management.md
 /knowledge-check --auto       # 静默模式，只输出问题列表

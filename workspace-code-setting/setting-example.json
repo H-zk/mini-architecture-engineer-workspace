@@ -1,0 +1,32 @@
+{
+  "folders": [
+    {
+      "path": ".",
+      "name": "docs"
+    },
+    {
+      "path": "../../src/.worktrees/example",
+      "name": "code-worktrees"
+    }
+  ],
+  "settings": {
+    "git.autoRepositoryDetection": true,
+    "git.openRepositoryInParentFolders": "never",
+    "git.repositoryScanMaxDepth": 4,
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.git": false
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/package-lock.json": true,
+      "**/pnpm-lock.yaml": true
+    },
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false,
+    "editor.formatOnType": false,
+    "editor.defaultFormatter": null
+  }
+}

@@ -1,6 +1,7 @@
-# 项目源码
+# 项目源码（.editorconfig 例外放行：防火墙文件，截断根配置向 src/ 嵌套仓穿透）
 src/*
 !src/.gitkeep
+!src/.editorconfig
 
 # lib 忽略
 **/node_modules
@@ -31,3 +32,10 @@ __pycache__
 
 # VS Code 多根工作区文件（机器相关/本地，不进 git）
 *.code-workspace
+
+# 任务 worktree 环境文件铺装（放行 README 说明，实体映射文件不进 git）
+**/code-workspace-env/*
+!**/code-workspace-env/README.md
+
+# 任务取证/复现附件（截图、日志样本等敏感件仅留本地，防误入库；结论进任务目录 md）
+case/**/evidence/*

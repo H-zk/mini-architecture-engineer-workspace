@@ -15,6 +15,7 @@ description: 初始化知识库或创建/重新生成单个主文档。不带参
 ### 1. 读取 AGENTS.md 中的知识库配置
 
 从 `AGENTS.md` 的 `## 知识库 → ### 目录结构` 代码块中解析主文档列表，得到每个文档的：
+
 - 编号（如 `00`、`01`）
 - 文件名（如 `00-project-overview.md`）
 - 简要说明
@@ -25,6 +26,7 @@ description: 初始化知识库或创建/重新生成单个主文档。不带参
 - 如果 `$ARGUMENTS` 为空，扫描 `notes/` 目录，找出所有缺失的主文档，逐一创建
 
 对于已存在的文档：
+
 - 已存在且非空（行数 > 10）→ 跳过，提示"文档已存在，如需更新请使用 `/knowledge-improve`"
 - 已存在但几乎为空（行数 ≤ 10）→ 视为缺失，覆盖生成
 
@@ -57,7 +59,7 @@ description: 初始化知识库或创建/重新生成单个主文档。不带参
 
 ## 示例
 
-```
+```bash
 /knowledge-create              # 初始化所有缺失的主文档
 /knowledge-create 05           # 只创建 05-user-management.md
 /knowledge-create 00-project-overview.md  # 指定完整文件名

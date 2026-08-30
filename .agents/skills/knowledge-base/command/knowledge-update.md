@@ -20,12 +20,14 @@ description: 在完成任务后，将业务逻辑变更记录到 notes/temp/ 增
 ### 2. 评估是否需要记录
 
 仅当变更涉及以下内容时才创建 temp 文件：
+
 - 业务逻辑变化（新增/修改/删除功能）
 - 数据模型变更
 - API 接口变化
 - 权限/可见性规则调整
 
 以下情况**不需要**记录：
+
 - 纯样式微调
 - typo 修复
 - 配置文件格式调整
@@ -47,6 +49,7 @@ description: 在完成任务后，将业务逻辑变更记录到 notes/temp/ 增
 在 `notes/temp/` 下创建 `{序号}-{kebab-case 描述}.md`。
 
 先读取 skill 的 `references/temp-template.md` 获取最新模板。模板包含以下字段：
+
 - 变更类型（feature / bugfix / refactor / api-change / permission-change）
 - 变更原因
 - 涉及的模块/文件
@@ -60,7 +63,7 @@ description: 在完成任务后，将业务逻辑变更记录到 notes/temp/ 增
 
 ## 示例
 
-```
+```bash
 /knowledge-update                                    # 自动总结当前任务变更
 /knowledge-update 用户管理模块新增批量导入功能     # 指定变更描述
 ```

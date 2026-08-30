@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-17
+updated-at: 2026-08-30
 owner: architecture-engineer-workspace
 type: 工作流变更日志（冷层，仅追溯时读）
 ---
@@ -8,6 +8,20 @@ type: 工作流变更日志（冷层，仅追溯时读）
 # CHANGELOG
 
 倒序排列，最新在上。版本与本日志按**任务**计：一个任务收尾时统一 bump 一次 `WORKFLOW.md` version 并在此追加一条（概括该任务全部工作流变更）；跨任务的独立小修可独立 bump + 一条（口径见 [WORKFLOW.md §8](./WORKFLOW.md)）。
+
+机制类条目**落笔即标成熟度三态**——**定型**（已验证、按现状执行）/ **试行**（带日落或复查判据的实验态）/ **退役**（声明下线、留档原因）；试验允许，但不许无声；盘点口径见 [retrospectives/README.md](./retrospectives/README.md) 第 5 项。
+
+## 2026-08-30（v0.1.2 → v0.2.0）
+
+v0.1.2 后第三批迭代（结构性大改进位 minor）：架构评分体系引进、feat 规格判定增密、机器门禁大升级与 skill 扩容。本批五条主线：
+
+- **架构能力反思体系（引进定型）**：新增顶层文档 `ARCHITECTURE.md`——架构师职责/方法论共识 + 五维能力评分 + 业务任务反思触发点表（单一真源在其 §5，WORKFLOW §7 与各执行流 skill 只留指针；feat 主记录前移至「审核中 → 验证中」且非阻断，case/tech/research 挂收尾阻断）。
+- **feat 规格判定与交付增密**：feat-plan-research 新增规格判定（复杂度画像五维两档，判定是分流不是门禁）；大需求触发契约快照 + 增强项白名单两道增强门禁，配设计对照、任务全景、契约快照三个条件模板；交付三件套升级**四件套**（新增 process-log.md，CURRENT 回归 digest）。WORKFLOW 同步：收场三件升**四件**（新增主动提议主题化提交）、任务 README H1 记目录名机检、INDEX 纪律（workspace-optimize 入索引体系 + 摘要禁嵌易变状态）、subAgent 协议补「中断即部分执行态」、坑条目三档判据、§8 bump 条目头格式约定。
+- **机器门禁升级**：workspace-check markdownlint 转 error 并扩围 `.agents/skills/**`（vendor 经 skills-lock 判定豁免、archive 冻结豁免）；新增 plainness（平实度四指标）、coverage、INDEX 对齐、README H1、next 受控菜单校验分区；`--staged` 暂存集聚焦三模式口径对齐；配套 46 个单元测试（`.tools/_tests/`）+ GitHub Actions CI 托底（个人工作区可删 `.github/`）。新增运维工具：context-usage（上下文占用探针）、repo-family（分支家族分析）、sync-worktree-workspace（worktree 工作区与着陆卡生成器，模板真源 `workspace-code-setting/`）、skill-bridge bash 版 link 脚本。
+- **新 skill 扩容与目录机制**：新增五 skill——external-article-analysis / skill-fit-eval（外部输入分析姊妹对，判据真源共用）、repo-maintenance（「维护仓库」由扩展位兑现内置，五阶段骨架 + 【模板占位】）、tools-entry（小工具登记簿）、visual-themes（HTML 主题库）；INDEX 立「执行流 / 路由覆盖层 / vendor」骨架三档规则。新增 `reference/branch-flows.md`（基准分支判定真源）、`workspace-code-setting/` 五件套、retrospectives 分层快照模板与 grill 归档结构契约；BACKLOG 补触发信号行（2/2 满格升格）、分诊两轨、90 天日落；AGENTS 补工作区仓自身 git 写红线、会话汇报平实口径、vendor 边界条款。
+- **评审收尾轮（workspace-review）**：HUMAN 补反思门禁人类侧（收尾 grilling 反问说明）与工具兼容速查；GUIDE 维护菜单口径对齐 5 项 + 能力总览补外部输入分析两行；AGENTS worktree 细则外迁（细则真源 = feat skill `references/worktree-protocol.md`，AGENTS 留红线摘要）；workspace-check `--task` 归档冻结豁免补齐、NEXT_MENU 宽容全角冒号；repo-maintenance 等 skill 引用口径修复与 `src/.editorconfig` 防火墙文件落地；新增 `CONTRIBUTE.md` 贡献机制说明（fork 分发 · PR 作同事库参考回流，不直接合入）。
+
+> 成熟度：本批机制条目均为**定型**（源仓验证后引进或随门禁实测落地）。
 
 ## v0.1.2 — 2026-08-17
 

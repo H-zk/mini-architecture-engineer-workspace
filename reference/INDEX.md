@@ -8,3 +8,4 @@
 | 标题 | 摘要 | 关键词 | 文件 |
 | ---- | ---- | ------ | ---- |
 | 仓库清单 | 工作流涉及的业务代码仓库清单，人类主写、按任务补全、每条打标签 | repos, 仓库, 清单 | repos.md |
+| 分支家族约定与 Git Flow 登记 | 各仓「用哪条 flow + 开发分支」登记表（AI 判定基准分支的真源，登记表待操作者落填）；flow 定义本体 = `workspace-code-setting/git-flows.yaml` | 分支, flow, 基准分支, 开发分支, worktree | branch-flows.md |
