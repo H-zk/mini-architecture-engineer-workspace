@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-29
-updated-at: 2026-08-29
+updated-at: 2026-10-18
 type: worktree 工作区配置资产目录（单一真源；生成器 = .tools/sync-worktree-workspace.py）
 ---
 
@@ -23,6 +23,7 @@ type: worktree 工作区配置资产目录（单一真源；生成器 = .tools/s
 - **模板-数据分离**：生成器只做占位替换，脚本不内嵌文案——改着陆卡文案只改 `landing-card.md`，新增 flow 只在 yaml 加条目，均无需改脚本。
 - **模板集版本戳**：生成器写 `.code-workspace` 时计算本目录全部文件的模板集 hash 存入 `_templateHash` 字段（VS Code 忽略未知字段）——`--check` 据此检出落后任务，防模板漂移无声。
 - **分层刷新**：`--all` 全量重生成（模板/settings 变更后）；`--card-only` 只补/刷新着陆卡（保护手工雕琢过 folder/settings 的存量工作区）。
+- **folder.name 字符红线**：手工雕琢 folders 时 name 只用字母、数字、`-`、空格（分层语义用 `·` `›` `→` 类安全分隔符）——禁用字符全清单与判据真源 = [feat-plan-research references/code-workspace-naming.md](../.agents/skills/feat-plan-research/references/code-workspace-naming.md)「字符红线」节（含 `/` 或 glob 元字符会静默破坏 VS Code「在文件夹中查找」的 scope）；改 `.code-workspace` 后须 `Developer: Reload Window` 生效。
 - **职责切分**：行为规范真源 = `AGENTS.md` / `WORKFLOW.md`，本目录只管工作区配置。
 - 依赖：Python 3.8+；可选 `pyyaml`（缺失时 flow 校验与 card_rules 渲染降级为提示文本，其余功能正常）。
 

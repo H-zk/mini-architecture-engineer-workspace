@@ -3,7 +3,7 @@
 """
 test_workspace_check_next_menu.py — feat next 受控菜单 token 级校验（NEXT_MENU）回归测试
 
-背景（task-2026-08-29-grill-backlog-b2a-b19 批 B，B19 兑现）：feat 各态 next 取值
+背景：feat 各态 next 取值
 按 feat-plan-research SKILL「next/blocker 约定」菜单枚举校验——越界取值/裸冒号视同
 next 未明确报 error。验证：合法无参与带参 token 过 / 越界与裸冒号报 / 带参 token
 错配报 / 已完成与非 story 类型不查。用临时 fixture 写 CURRENT，不写真实工作区文件

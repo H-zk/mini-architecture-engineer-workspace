@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-29
-updated-at: 2026-08-30
+updated-at: 2026-10-18
 type: skill-fit-eval 报告骨架模板（产 report.md 前必读）
 ---
 
@@ -39,4 +39,4 @@ type: skill-fit-eval 报告骨架模板（产 report.md 前必读）
 
 ## 判据速查（引用不展开）
 
-三关细则、三层结论结构、质量 / 热度 / 适配正交、同病两层药方、器官型错配、常驻注入 vs 渐进披露、证据形态定档——引用时写判据名 + 出处（`exps/workflow/skill-ecosystem-fit-portrait-first.md`——不随产物分发，随使用重建），不在报告里复写演化史。
+三关细则、三层结论结构、质量 / 热度 / 适配正交、同病两层药方、器官型错配、常驻注入 vs 渐进披露、证据形态定档——引用时写判据名（出处经 `exps/INDEX.md` 检索），不在报告里复写演化史。

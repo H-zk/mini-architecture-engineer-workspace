@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-30
+updated-at: 2026-10-18
 owner: architecture-engineer-workspace
 type: 工作流变更日志（冷层，仅追溯时读）
 ---
@@ -10,6 +10,16 @@ type: 工作流变更日志（冷层，仅追溯时读）
 倒序排列，最新在上。版本与本日志按**任务**计：一个任务收尾时统一 bump 一次 `WORKFLOW.md` version 并在此追加一条（概括该任务全部工作流变更）；跨任务的独立小修可独立 bump + 一条（口径见 [WORKFLOW.md §8](./WORKFLOW.md)）。
 
 机制类条目**落笔即标成熟度三态**——**定型**（已验证、按现状执行）/ **试行**（带日落或复查判据的实验态）/ **退役**（声明下线、留档原因）；试验允许，但不许无声；盘点口径见 [retrospectives/README.md](./retrospectives/README.md) 第 5 项。
+
+## 2026-10-18（v0.2.0 → v0.3.0）
+
+v0.2.0 后第四批迭代（结构性大改进位 minor）：迭代边界状态机、归档根收拢、经验毕业台账制与能力扩容。本批五条主线：
+
+- **迭代边界状态机（引进定型）**：新增 `sprint-iteration` skill——三态（开始/中/结束）+ 结束批五阶段十六步 + tag 七门禁 + 开始批六步，WORKFLOW §2.7 收敛为元定义；WORKFLOW frontmatter 增 `sprint-version` 唯一真源字段与 `sprint-log` 掉落轨迹（机检：格式 + 尾段一致）；retrospectives 改两段式（A 段九步硬锚点 + B 段七层清算按需深浅）；`/sprint-check` 判态命令；ARCHITECTURE §3 度量升级六字段 + CURRENT 打标前移。
+- **归档根收拢（定型）**：归档布局 `<任务根>/archive/` 收拢为根级 `archive/<根>/`（全工作区唯一归档根，冷层）；workspace-check 判定统一 `_in_archive`/`_task_type_of`（含旧布局残留三路径一致告警）、lint 负 glob 收敛 `!archive/**`、新增根内残留与散落归档根 warning。
+- **经验毕业台账制（定型）**：再犯计数改追加式台账 `exps/TRIGGERS.md`（发现与判定分层：疑似/确认/剔除三态），毕业即移行 `exps/ARCHIVE_INDEX.md`（留档/删档/部分毕业三分流）；沉淀判据卡四问 + 出口 gate；错误驱动召回引擎 `.tools/exp-lookup.py`；新立「知识层不回指经验层」红线（skills/.tools/notes 禁 exps 条目直链，检索走 INDEX）。
+- **feat 执行流增密（定型）**：review 抽检五问（推送授权前置门禁）、契约快照三要素升五轴冻结、mock 联调纪律、注释先行、归属判断五环溯源、大需求三形态产物；新增 6 个 references 细则（评审纪律/注释清扫/归属溯源/跨端对齐/重做对照/验证缺陷环）；着陆卡门禁速查区（gate-quickref 双标记块，当前手工同步快照）。
+- **能力扩容与收场口径（定型）**：新增 skill——series-phase-task-manage（大任务系列容器）、diagram-conventions（产图约定）、plainness-check（平实度终检，配词表 `.tools/plainness-lexicon.md`）、workspace-kanban（会话内看板，与开工汇报共用扫描配方）；workspace-ops 增 skill 市场巡检项（三源取数 + 画像预筛）；新工具——rollout-extract（会话原文转录，自评一手证据源）、html-render-audit（CDP 渲染验收）、warnings-registry（机检豁免台账）、graphify 建图工程（uv 隔离）、apply-src-git-excludes（src 仓忽略铺装）、codegraph 版本锚定 npx 口径；skill-bridge `-Verify` 只读核验；收场四件④改「止于评审修复不提交」——提交推送归操作者统一会话（workspace-review 两种消费形态 + commit-splitting 细则件）。
 
 ## 2026-08-30（v0.1.2 → v0.2.0）
 

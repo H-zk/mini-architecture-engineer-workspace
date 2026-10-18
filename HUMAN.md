@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-30
+updated-at: 2026-10-18
 ---
 
 # HUMAN — 操作者 SOP
@@ -46,7 +46,7 @@ updated-at: 2026-08-30
 ### 0.6 Skills 的自包含结构（本机配置）
 
 - **Skills 统一物理收纳在 `.agents/skills/`**，入口登记见其 `INDEX.md`。无自动发现的工具（codex / copilot 等）由 `AGENTS.md`「skills 加载」指引主动读取。
-- **换机器 / 新 clone**（Windows + claude 用户）：跑 `.tools/skill-bridge/` 的 junction 桥脚本重建 skills 链接，其余工具直接可用。
+- **换机器 / 新 clone**（Windows + claude 用户）：跑 `powershell -NoProfile -ExecutionPolicy Bypass -File .tools/skill-bridge/link-claude-skills.ps1` 重建 skills 链接，建议随后同命令加 `-Verify` 核验一次（检查 `.agents/skills` 真源与 junction 指向）；其余工具直接可用。
 - **全局 config 保持不动（项目优先，全局兜底）**：项目级配置覆盖全局同名项，无需改全局即可工作；不删改各工具的全局配置。新增能力一律先落项目级（原则见 [AGENTS.md](./AGENTS.md)「配置」）。
 
 ---
@@ -63,17 +63,18 @@ updated-at: 2026-08-30
 
 ---
 
-## 2. 定期维护
+## 2. 定期维护（清单与节奏真源 = [`workspace-ops` skill](./.agents/skills/workspace-ops/SKILL.md)）
 
-**维护项总览**（内置 5 项）：
+> 本节只承载**人类入口**（每项发什么）；维护项清单、两步交互、节奏与依赖的唯一真源在 [`workspace-ops` skill](./.agents/skills/workspace-ops/SKILL.md)——新增/调整维护项只改 skill 一处，本表随需跟进入口描述（项数随 skill 演化，不在此计数）。
 
-| 维护项 | 状态 | 节奏 |
-| ------ | ---- | ---- |
-| 审视工作流（workspace-grill） | **内置** | 按需；每迭代 ≥1 次（唯一 BACKLOG 评估者） |
-| 阶段回顾 | **内置** | 硬锚点 = 迭代末（独占归档批次 / 定下迭代 sprint-version） |
-| 学习外部工作区（colleague-kb-synthesis） | **内置** | 按需；给出对方工作区本地路径 = 只读授权；同事库/开源参照登记层 = `position/`（清单你维护，记录 AI 维护） |
-| 知识库加固（notes-reinforcement） | **内置** | 按需；攒了已结 CASE/需求素材时触发 |
-| 维护仓库（repo-maintenance） | **内置** | 五阶段独立显式授权（对账/同步/发现/clone/迁移）；配套脚本与内网平台【模板占位】，接入后全量启用，见 `.agents/skills/repo-maintenance/SKILL.md` |
+| 维护项 | 入口（对 AI 说） |
+| ------ | ---- |
+| 审视工作流 | `#workspace-optimize 审视工作流`（唯一 BACKLOG 评估者） |
+| 阶段回顾 | `#workspace-optimize 做一次阶段回顾` |
+| 学习外部工作区 | `#workspace-optimize 学习外部工作区 <本地路径>`（给出路径 = 只读授权；登记层 = `position/`，清单你维护） |
+| 知识库加固 | `#workspace-optimize 知识库加固`（备已结 CASE/需求素材 + 查询入口） |
+| 维护仓库 | `#workspace-optimize 维护仓库`（五阶段独立显式授权；配套脚本【模板占位】，接入后全量启用） |
+| skill 市场巡检 | `#workspace-optimize skill 市场巡检`（存活候选清单呈你点名，点名项走单仓评估） |
 
 ### 2.1 工作流瘦身（workspace-grill）
 
@@ -81,7 +82,7 @@ updated-at: 2026-08-30
 
 ### 2.2 阶段回顾（定期复盘执行质量）
 
-**硬锚点 = 迭代末**，发 `#workspace-optimize 做一次阶段回顾`：AI 锚定上一次回顾的 commit 到当前 HEAD，复盘「执行质量」（做对 / 做快 / 做扎实），产出 `retrospectives/retro-YYYY-MM-DD.md`。方法与节点锚见 [`retrospectives/README.md`](./retrospectives/README.md)。回顾为 BACKLOG / WORKFLOW 调整提供基于事实的输入，但遵循「宁可晚进」。回顾时顺带确认 [ARCHITECTURE.md](./ARCHITECTURE.md) §4 五维评分快照（迭代末收敛）。
+实战线**硬锚点 = 迭代末**（template 线按需发起，不走迭代节奏——见 [WORKFLOW §2.7](./WORKFLOW.md) 豁免），发 `#workspace-optimize 做一次阶段回顾`：AI 锚定上一次回顾的 commit 到当前 HEAD，复盘「执行质量」（做对 / 做快 / 做扎实），产出 `retrospectives/retro-YYYY-MM-DD.md`。方法与节点锚见 [`retrospectives/README.md`](./retrospectives/README.md)。回顾为 BACKLOG / WORKFLOW 调整提供基于事实的输入，但遵循「宁可晚进」。回顾时顺带确认 [ARCHITECTURE.md](./ARCHITECTURE.md) §4 五维评分快照。
 
 ---
 
@@ -110,7 +111,7 @@ updated-at: 2026-08-30
 
 ### 3.1 状态翻转后接续任务（跨会话续接）
 
-任务状态翻转后，AI 会在收场时输出**交接卡**（进入方式 + 首步动作 + 待决策点）。新状态事项两种接法：**你开新会话**（默认，需你交互/决策的段必须走这条；进入方式 = `@ <任务>/CURRENT.md`）或 **AI 派隔离执行单元**自主执行（仅限「决策已做完」的自主段，如 plan 确认后的编码段）。执行单元遇决策点会即停并留痕 CURRENT（看 `next`/`blocker`），你回来处理后开新会话继续即可。规则真源：[WORKFLOW.md §2.6](./WORKFLOW.md)「状态翻转的会话边界」。
+任务状态翻转后，AI 会在收场时输出**交接卡**（进入方式 + 首步动作 + 待决策点）。新状态事项两种接法：**你开新会话**（默认，需你交互/决策的段必须走这条；进入方式 = `@ <任务>/CURRENT.md`）或 **AI 派隔离执行单元**自主执行（仅限「决策已做完」的自主段，如 plan 确认后的编码段）。执行单元遇决策点会即停并留痕 CURRENT（看 `next`/`blocker`），你回来处理后开新会话继续即可。规则真源：[WORKFLOW.md §2.6](./WORKFLOW.md)「状态翻转的会话边界」。状态翻转收场时，AI 只做评审修复自检、不提交——改动保持 unstaged 攒批；你随时统一开一个会话，走 `workspace-review` 把攒批改动按主题提交推送。
 
 ---
 
@@ -132,7 +133,7 @@ AI 写的文档（story/case/tech/research 下的产出）需要你确认：
 
 ### 4.3 收尾
 
-对 AI 说「这个任务完成了，收尾吧」→ AI 会执行收尾门禁（确认制完成 → 沉淀询问 → 工作区校验 errors=0）、更新 `CURRENT.md` 状态、更新 INDEX。**业务任务会反问你对本任务的看法**（做对什么 / 有无返工 / 验证情况），用于 `ARCHITECTURE.md` 评分观察——case/tech/research 收尾时是 grilling 反问的**阻断性门禁**（答完才继续收尾）；feat 主记录已前移至「审核中 → 验证中」转态时（非阻断提醒），收尾时仅简单咨询补充验证期信号。迭代末回顾时再顺带确认五维评分快照（§2.2）。
+对 AI 说「这个任务完成了，收尾吧」→ AI 会执行收尾门禁（确认制完成 → 沉淀询问 → 工作区校验 errors=0）、更新 `CURRENT.md` 状态、更新 INDEX。**业务任务会反问你对本任务的看法**（做对什么 / 有无返工 / 验证情况），用于 `ARCHITECTURE.md` 评分观察——case/tech/research 收尾时是 grilling 反问的**阻断性门禁**（答完才继续收尾）；feat 主记录已前移至「审核中 → 验证中」转态时（非阻断提醒），收尾时仅简单咨询补充验证期信号。回顾时再顺带确认五维评分快照（§2.2）。
 
 ---
 

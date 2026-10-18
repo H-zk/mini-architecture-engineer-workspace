@@ -1,12 +1,12 @@
 ---
 created-at: 2026-08-29
-updated-at: 2026-08-29
+updated-at: 2026-10-18
 type: 工作区分层快照模板（迭代边界状态锚；对照材料，不改定位基准）
 ---
 
 # snapshot-template｜工作区分层快照模板
 
-> 迭代末回顾的配套分层快照产物，落 `position/snapshots/snapshot-sprint-<YYYYMMDD>.md`（结构契约自足；实例由受让方首个迭代回顾产出）。**结构固定**（下述章节顺序与标题不增删、不重排）——这是相邻快照可比的前提，章节级 diff 即版本差异信号；配合 frontmatter 的 from/to-commit 与 `git log --oneline <from>..<to>` 即双通道版本差异分析。
+> 阶段回顾的配套分层快照产物（template 线随按需回顾），落 `position/snapshots/snapshot-sprint-<YYYYMMDD>.md`（结构契约自足；实例由受让方首个迭代回顾产出）。**结构固定**（下述章节顺序与标题不增删、不重排）——这是相邻快照可比的前提，章节级 diff 即版本差异信号；配合 frontmatter 的 from/to-commit 与 `git log --oneline <from>..<to>` 即双通道版本差异分析。
 
 ## frontmatter 四锚（复制后填齐）
 

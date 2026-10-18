@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-16
-updated-at: 2026-08-30
+updated-at: 2026-10-18
 type: 项目 Skill 索引
 maintainer: AI（人类 review）
 ---
@@ -11,25 +11,32 @@ maintainer: AI（人类 review）
 
 每个 Skill 必须有合法 frontmatter（`name` 与父目录匹配）；**骨架按类型三档**——执行流 skill 明确 触发 / Lifecycle / 步骤 / 门禁 / 产物 / 验证；路由与覆盖层 skill（入口登记 / 配对定制类）只登触发与指针，不建状态机；vendor skill 随源不检（见 vendor 节）。命令入口（`/command` 调用）= 根 `.agents/commands/` 薄路由文件，不在此目录。
 
+frontmatter 触发字段两形态并存：既有 skill 多数带 `triggers` 列表（agents-md-refiner / knowledge-base 为引入改写形态，无 triggers）；2026-10 起新建 skill 用 `created-at` / `updated-at` / `type` + 触发词嵌 description 形态——新形态不写 `triggers`，触发语义一律进 description。
+
 | Skill | 触发 | 一句话 | 入口 |
 | ---- | ---- | ---- | ---- |
 | feat-plan-research | `#feat` / `#需求` / 写开发计划 | 需求开发流：五态 Lifecycle + 全流程门禁（规格判定五维两档 → 全景调研 → plan 确认才编码 → 交付四件套 → 审核 → 验证三分法） | [feat-plan-research/SKILL.md](./feat-plan-research/SKILL.md) |
 | case-troubleshoot | `#case` / `#排查` CASE 排查 | CASE 标准流程与证据闭环（先锁失败接口 + 事实/假设分区 + 完成门禁 + 对客回复可选） | [case-troubleshoot/SKILL.md](./case-troubleshoot/SKILL.md) |
 | tech-consult | `#tech` / `#咨询` 技术咨询 | 技术咨询流：澄清 → 知识库分层查证（涉及系统现状回 `src/` 核实）→ `answer.md` 结论先行 | [tech-consult/SKILL.md](./tech-consult/SKILL.md) |
 | research-survey | `#research` / `#调研` 需求调研 | 需求调研流：定边界 → 代码锚定现状（无实现也是结论）→ `report.md` 方案对比与建议 | [research-survey/SKILL.md](./research-survey/SKILL.md) |
-| workspace-ops | `#workspace-optimize` / `#工作区优化` / 单字词启动器 | 工作区迭代优化总入口：维护菜单（内置 5 项）+ 两步交互 + 路由表 + 两态 Lifecycle（含 reopen） | [workspace-ops/SKILL.md](./workspace-ops/SKILL.md) |
+| workspace-ops | `#workspace-optimize` / `#工作区优化` / 单字词启动器 | 工作区迭代优化总入口：维护菜单 + 两步交互 + 路由表 + 两态 Lifecycle（含 reopen） | [workspace-ops/SKILL.md](./workspace-ops/SKILL.md) |
+| sprint-iteration | 判态（「当前迭代什么状态」「这个治理动作现在能做吗」）/ 回顾启动后的结束批 / tag 后开始批 / `/sprint-check` | 迭代边界状态机执行流：三态（开始/中/结束）三转移 + 每态治理白名单 + 结束批（五阶段十六步：回顾裁决销账零悬空 + 收口清单收完才 tag，出口节奏三形态 + tag 七门禁）+ 开始批（遗留裁决门 → 按裁决回补待办 → 手册定稿经操作者确认 + 任务收尾 + review 推送收口）+ snapshots 手册两件制（开启版/汇总版同名双时点）；状态由物证推断不另存字段；WORKFLOW §2.7 只留元定义；template 线不执行（§2.7 豁免、按受让方实战口径供给） | [sprint-iteration/SKILL.md](./sprint-iteration/SKILL.md) |
 | workspace-grill | 「审视工作流」「grill 工作区」「定期 grill」 | 工作区治理审计与决策协议（建议/决策/落地三模式） | [workspace-grill/SKILL.md](./workspace-grill/SKILL.md) |
 | workspace-review | 「review 暂存区/工作区改动」「按主题拆 commit」 | 未提交变更评审 + 主题化提交操作流（三段式 P0/P1/P2 反馈 + 证据门槛 + 大批次并行深评 + 修复波次 + hunk 级拆分 + commit 信息确认 + 完整性验证；仅本工作区仓库，不含 src/ 代码评审） | [workspace-review/SKILL.md](./workspace-review/SKILL.md) |
 | colleague-kb-synthesis | 「对比同事库」「学习/对比/借鉴外部工作区」「对比开源项目」 | 外部对象对比与借鉴分析：同步锚定 + position 定位基准对照 + 双维度对比（同事库=工作流范式+知识侧重；开源=仅架构）→ 分优先级借鉴清单——只分析不自动落实、逐条裁决分流；一次性路径 = 临时只读授权 | [colleague-kb-synthesis/SKILL.md](./colleague-kb-synthesis/SKILL.md) |
 | notes-reinforcement | `#workspace-optimize 知识库加固` / 启动器选中该项 | 知识库加固：已结 CASE/需求 5 步反哺 notes（盲判先行 → 方案 → 对照 → 代码核实 → 反思去重，盲点优先成坑） | [notes-reinforcement/SKILL.md](./notes-reinforcement/SKILL.md) |
 | knowledge-base | `/knowledge-*` 命令族（create / update / merge-temp / improve / refactor / check / evolve） | src/ 项目级知识库管理框架：项目 `AGENTS.md ## 知识库` 章节声明结构（skill 不硬编码业务），主文档 + temp/ 增量笔记全生命周期；**仅服务 `src/` 下代码项目，不用于本工作区 `notes/`**（本区走 notes-reinforcement，防双载） | [knowledge-base/SKILL.md](./knowledge-base/SKILL.md) |
 | agents-md-refiner | 语义命中（初始化/补全/精简项目 AGENTS.md）；feat 调研环节目标仓 AGENTS.md 缺失/过时时按需提议 | 项目 AGENTS.md 完善流：分析代码提炼对 Agent 真正必要的约定（P0/P1/P2 探索清单 + 章节规范 + ≤200 行篇幅控制），诊断报告经操作者确认后更新 | [agents-md-refiner/SKILL.md](./agents-md-refiner/SKILL.md) |
-| guide | 「新手引导」「快速适配」「处理 GUIDE」/ `/guide`；首次会话闸门（AGENTS `onboard-state: 待引导`）强制触发 | 新手引导流：业务范围定调（单业务/产品线/公司全业务）→ 环境与仓库 → 占位落填 → 首任务验证，适配完成后 GUIDE 缩为退役存根 + 引用清理（可选连带退役自身）；明确跳过 = `已跳过` 永久豁免 | [guide/SKILL.md](./guide/SKILL.md) |
-| skill-fit-eval | 「分析这个 skill」「适不适合我们」+ 给出 skill 仓库链接 | 外部 skill 单仓定向选型评估：锚定基线 → 初判（画像四要素 + 三关）→ 深析（subAgent 分域）→ 可选实测 → 裁决留操作者；仅分析不自动落实；判据真源 exps skill-ecosystem-fit | [skill-fit-eval/SKILL.md](./skill-fit-eval/SKILL.md) |
+| guide | 「新手引导」「快速适配」「处理 GUIDE」/ `/guide`；首次会话闸门（AGENTS `onboard-state: 待引导`）强制触发 | 新手引导流：场景检测三态（新 clone / 增量接入 / 已就绪）+ 双道（最小启动道两处核心占位即跑首任务 / 完整道：定调 → 环境与仓库 → 占位落填 → 首任务验证 → 适配摘要），适配完成后 GUIDE 缩为退役存根 + 引用清理（可选连带退役自身）；明确跳过 = `已跳过` 永久豁免 | [guide/SKILL.md](./guide/SKILL.md) |
+| skill-fit-eval | 「分析这个 skill」「适不适合我们」+ 给出 skill 仓库链接 | 外部 skill 单仓定向选型评估：锚定基线 → 初判（画像四要素 + 三关）→ 深析（subAgent 分域）→ 可选实测 → 裁决留操作者；仅分析不自动落实；判据真源 exps skill-ecosystem-fit-portrait-first | [skill-fit-eval/SKILL.md](./skill-fit-eval/SKILL.md) |
 | external-article-analysis | 「分析这篇文章」+ 给出文章链接 | 外部文章分析：网页直读 + 读后定性（防摘要当原文）→ 逐篇骨架提炼对照本区（覆盖/同构/真空隙/撞车）→ 三层结论 + 裁决点；判据层共用 skill-fit-eval | [external-article-analysis/SKILL.md](./external-article-analysis/SKILL.md) |
 | tools-entry | 「小工具」「工具入口」「上下文占用」；命中登记工具触发词 | .tools 小工具会话入口登记簿：触发词 → 命令 → 授权两档（只读默认可执行 / 写须当次授权）；关键词命中才触发；已登记 context-usage（上下文占用探针） | [tools-entry/SKILL.md](./tools-entry/SKILL.md) |
 | repo-maintenance | 「仓库同步」「clone 仓库」「发现活跃仓库」「仓库对账」「origin 迁移」 | src/ 仓库维护五阶段（对账/同步/发现/clone/迁移，各自独立授权）；脚本与内网主机【模板占位】按接入落地后启用；兑现 workspace-ops「维护仓库」菜单项 | [repo-maintenance/SKILL.md](./repo-maintenance/SKILL.md) |
 | visual-themes | 点名 visual-themes / 明示「给 HTML 产物用主题、换主题」 | HTML 可视化多主题库（明示召唤的增强层）：5 套主题（classic/dark/blueprint/editorial/terminal）CSS tokens + 组件要点 + 图表色板；产物自包含零外链；与 show-me 边界 = 内容归 show-me、视觉 token 归本 skill | [visual-themes/SKILL.md](./visual-themes/SKILL.md) |
+| series-phase-task-manage | 大需求立项 / plan 编写 / 系列任务阶段收口 /「要不要分阶段」判别 | 大任务系列容器模式：总目录承接需求身份（总体把控四账 + 阶段位置表唯一活状态）、子阶段目录承接交付（不立 CURRENT）；plan 期五轴检查出拆分建议；feat 型与 feat-plan-research 配对加载，一次性收敛工作不启用（执行手段 ≠ 交付结构） | [series-phase-task-manage/SKILL.md](./series-phase-task-manage/SKILL.md) |
+| diagram-conventions | 产 HTML 图解页 / SVG 图 / 手绘时序流程图（通常与 show-me 一起命中）；视图类交付设计冻结前 | 产图约定（与 show-me 配对：内容归 show-me、选型与绘图纪律归本 skill）：八型选型判据 + jobs-to-be-done 前置门禁 + SVG 绘图纪律 + 手绘 HTML 守约 + svg-lint 门禁纪律；纯 Mermaid 代码块不触发 | [diagram-conventions/SKILL.md](./diagram-conventions/SKILL.md) |
+| plainness-check | 「平实度终检 / 去AI味 / AI 味检查 / 文风检查 / humanize / 盲检」+ 裁决呈报/报告定稿前 | AI 平实度终检编排层（四层分工：AGENTS 五条纪律 / 词表 `.tools/plainness-lexicon.md` / workspace-check plainness 机检 / 本 skill 流程）：机检先行 → 词表十五类+结构层判读 → 双模式（仅诊断/改写稿）→ 分级收敛 → 可选 subAgent 盲检；只报命中不判毒 | [plainness-check/SKILL.md](./plainness-check/SKILL.md) |
+| workspace-kanban | 「看板」「任务大盘」「现在卡着什么」「工作区全景」/ `/workspace-kanban`；裸词「看板」= 启动器 | 会话内任务看板（只读投影）：三红线（零新状态/零新载体/零写入）+ 扫描配方（与 WORKFLOW §2.1 开工汇报同源简版）+ 分诊（顺延折叠/卡点三分）+ 四段输出（建议/闸门队列/全任务图/风险雷达含定期项提醒）；不触发立项 | [workspace-kanban/SKILL.md](./workspace-kanban/SKILL.md) |
 
 > 维护仓库原为菜单扩展位，已由 repo-maintenance 兑现内置（2026-08-29）；后续新扩展位接入仍按「本表登记 + 同步 workspace-ops 路由表」执行。
 > `updated-at` 约定：**模板原生 skill** 带 `updated-at`、随改 bump（编辑纪律见 AGENTS「编辑文档」）；**引入型 skill 保持引入形态、不带该字段**——判定以仓库根 `skills-lock.json` 登记为准（现 grilling / show-me，规范见 [VENDOR.md](./VENDOR.md)）；lock 外的 skill（借鉴落地如 knowledge-base / agents-md-refiner、自建）均属模板原生，frontmatter 带 `updated-at`。bump 规则只作用于带该字段的文档。
@@ -47,7 +54,7 @@ vendor 判定标准、检测命令、lock 关系、管理命令、安装后安�
 > 安全确认回填（四步见 [VENDOR.md](./VENDOR.md)）：grilling（2026-08-16）内容审查 ✓（无 URL / 外发 / 凭证 / 注入模式）、文件清单 ✓（仅 SKILL.md + agents/openai.yaml）。
 > **2026-08-17 上游比对 ✓**——经 skills CLI 重装恢复上游原版（此前源副本含 3 处本地标点改动、违反「随源逐字节一致」，lock 同步 `a16b2f66`；CLI 曾向 `.claude/skills`（顶掉 junction）与 `.zcode/skills` 误写真副本，已清理并重建桥、`.zcode/` 进 gitignore）。
 > **2026-08-29 `skills update` ✓**——上游 round 格式新版（+7/-1，纯格式指引、审查无 URL/注入类内容），lock 同步 `4dd886b0`；桥完好、无 CLI 副本残留、`--section skills` errors=0；生成物审查待首次真实使用，补齐后更新本注。
-> show-me 使用边界（注脚覆盖上游「生成后自动打开」默认）：默认**会话内展示**（Mermaid / 伪代码 / 表格等内联形式优先）；仅操作者明确要可视化报告时才生成 HTML（自包含、只落 `temp/`、不外链）；**任何情况不自动打开浏览器**，只报路径由操作者自访。安全确认（2026-08-16）：内容审查 ✓（纯指导，无 URL / 外发 / 凭证 / 注入模式）、文件清单 ✓（仅 SKILL.md）；完整性 = 源自经验证的上游一致副本字节复制，本仓直取上游 raw 比对待授权、生成物审查待首次真实使用，补齐后更新本注。
+> show-me 使用边界（注脚覆盖上游「生成后自动打开」默认）：默认**会话内展示**（Mermaid / 伪代码 / 表格等内联形式优先）；仅操作者明确要可视化报告时才生成 HTML（自包含、只落 `temp/`、不外链）；例外 = 迭代 snapshots 手册（`sprint-iteration` 的 `manual-sprint-*` 同名双时点——开启版/汇总版）落 `position/snapshots/` 常驻家；**任何情况不自动打开浏览器**，只报路径由操作者自访。安全确认（2026-08-16）：内容审查 ✓（纯指导，无 URL / 外发 / 凭证 / 注入模式）、文件清单 ✓（仅 SKILL.md）；完整性 = 源自经验证的上游一致副本字节复制，本仓直取上游 raw 比对待授权、生成物审查待首次真实使用，补齐后更新本注。
 
 ## references/ 子目录约定（渐进披露）
 

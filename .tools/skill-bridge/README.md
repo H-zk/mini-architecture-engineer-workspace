@@ -9,6 +9,8 @@ Claude Code 原生**只发现 `.claude/skills/`**，不扫描 `.agents/skills/`�
 - **Windows**：symlink（`mklink /D`）需管理员权限/开发者模式 → 改用 junction（`mklink /J`，无需特殊权限），Node fs（Claude Code 是 Node 程序）实测可跟随：`isSymbolicLink:true` + `realpathExists:true`
 - **macOS / Linux**：普通 symlink 即可，无需特权
 
+触发语义同理只认 `description`（`when_to_use`），不认 `triggers`（实测 claude CLI 2.1.172）——`triggers` 保留给声明它的工具用，触发语义必须写进 `description`；迁移 skill 进本工作区时逐个核对 `triggers` 关键词是否已进 `description`。
+
 ## 用法
 
 ```powershell

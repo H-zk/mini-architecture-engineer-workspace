@@ -1,7 +1,7 @@
 ---
 name: workspace-ops
-description: 工作区迭代优化（#workspace-optimize / #工作区优化）任务总入口与生命周期单一真源：定期维护菜单（内置 5 项）与两步交互、按内容路由到对应 skill（审视工作流 / 阶段回顾 / 学习外部工作区 / 知识库加固 / 维护仓库）、两态状态机与 reopen 协议、产物约定。立项后先读本 skill 再路由；业务工作不走本标签。
-updated-at: 2026-08-29
+description: 工作区迭代优化（#workspace-optimize / #工作区优化）任务总入口与生命周期单一真源：定期维护菜单与两步交互、按内容路由到对应 skill（审视工作流 / 阶段回顾 / 学习外部工作区 / 知识库加固 / 维护仓库 / skill 市场巡检）、两态状态机与 reopen 协议、产物约定。立项后先读本 skill 再路由；业务工作不走本标签。
+updated-at: 2026-10-18
 triggers:
   - "#workspace-optimize"
   - "#工作区优化"
@@ -42,29 +42,41 @@ states: [进行中, 已完成]
 | 学习外部工作区 | **内置** | 学习对象本地路径（= 只读授权；同事库/开源参照先按 `position/` 登记）+ 聚焦维度（留空=全面）；流程见 [colleague-kb-synthesis](../colleague-kb-synthesis/SKILL.md) | 是（对象路径） |
 | 知识库加固 | **内置** | 已结 CASE/需求素材 + 结论查询入口（地址/系统）；流程见 [notes-reinforcement](../notes-reinforcement/SKILL.md) | 是（素材+入口） |
 | 维护仓库 | **内置** | 范围（如「同步 src/」「clone 新仓库」「仓库对账」，留空=对账先行）；流程见 [repo-maintenance](../repo-maintenance/SKILL.md)（五阶段各自独立授权；配套脚本未落地时按其【模板占位】说明执行） | 否 |
+| skill 市场巡检 | **内置** | 巡检范围（默认三源全跑：缺口定向检索 + 作者池追踪 + 仓库生态榜单；可指定单源/加关键词） | 否 |
 
 ## 路由表（立项后按内容路由，不写独立执行节）
 
 | 操作类型 | 路由 skill |
 | -------- | ---------- |
 | 工作流瘦身 / 压测 / 治理审计 | `workspace-grill` |
-| 阶段回顾（执行质量复盘，非 skill 流程） | 方法见 [`retrospectives/README.md`](../../../retrospectives/README.md) |
+| 阶段回顾（执行质量复盘，非 skill 流程） | 方法见 [`retrospectives/README.md`](../../../retrospectives/README.md)；回顾启动后的结束批/开始批走 [`sprint-iteration`](../sprint-iteration/SKILL.md)（边界状态机单一真源，`/sprint-check` 判态） |
 | 学习外部工作区（同事库/开源参照对比） | [`colleague-kb-synthesis`](../colleague-kb-synthesis/SKILL.md) |
 | 知识库加固（已结 CASE/需求反哺 notes） | [`notes-reinforcement`](../notes-reinforcement/SKILL.md) |
 | 维护仓库（src/ 同步 / 发现 / clone / 迁移） | [`repo-maintenance`](../repo-maintenance/SKILL.md) |
 | skill 选型评估（外部 skill 仓单仓定向分析） | [`skill-fit-eval`](../skill-fit-eval/SKILL.md) |
 | 外部文章分析（网页正文逐篇对照本区） | [`external-article-analysis`](../external-article-analysis/SKILL.md) |
+| skill 市场巡检（生态取数与预筛 → 点名项单仓评估） | 取数三源（缺口定向检索 / 作者池追踪 / 仓库生态榜单）+ 画像四要素预筛，细则见下方「skill 市场巡检取数与预筛细则」；存活候选清单**呈操作者点名** → 点名项走 [`skill-fit-eval`](../skill-fit-eval/SKILL.md) 全流程；任务执行中的即时需求检索不进巡检流 |
+
+**skill 市场巡检取数与预筛细则**（路由表上行的展开）：
+
+- 取数 = ① **缺口定向检索**（从 BACKLOG 痛点/高频摩擦抓当轮能力缺口关键词，GitHub / skill 市场站按词直搜——低热度高适配的 skill 藏在检索词里不在榜单里）；
+- ② **作者池追踪**（已验证作者仓 = vendor 表 + 用户级已装 + 历轮点名宿主，扫新作 commit/release）；
+- ③ **仓库生态榜单**（GitHub 仓库层 top-repos / best-of 类聚合榜单为主源；市场站点 trending 降为快照——市场生态偏商用、开发工作流类存活率低；awesome 类策展清单低频扫一次）；
+- → **画像四要素预筛**（position 边界 / 高频活动 / 能力底账 / BACKLOG 排除项——防生态热区带偏）。
 
 ## 维护节奏与依赖
 
-- **随意触发**：审视工作流（workspace-grill）——操作者按需发起，每迭代 ≥1 次（唯一 BACKLOG 评估者）。
-- **硬锚点 = 迭代末**：阶段回顾（独占归档批次 / 定下迭代 sprint-version + 周期 / exps 毕业清单确认 / 待对账打捞）。
+- **随意触发**：审视工作流（workspace-grill）——操作者按需发起（实战线每迭代 ≥1 次，唯一 BACKLOG 评估者；template 线无迭代节奏，WORKFLOW §2.7 豁免）。
+- **定期锚点（建议级）**：skill 市场巡检——约 14 天一次；也可操作者随时点名触发。
+- **硬锚点 = 迭代末**：阶段回顾（独占归档批次 / 成熟度盘点 + 清扫 / 定下迭代 sprint-version + 周期 + 掉落改标 / exps 毕业清单确认 / 待对账打捞 / 打稳定 tag `sprint-<本轮>`〔七门禁，规格见 `sprint-iteration` skill〕）——template 线按需发起、不锚定迭代末（WORKFLOW §2.7 豁免）。
 - 软链：colleague-kb-synthesis 跑完建议接一次 workspace-grill（skill 内已内置该提示）。
-- 硬依赖：新迭代任务立项依赖回顾定 `sprint-version`（回顾没跑、旧迭代任务留活跃区 = 设计内行为）。
+- 硬依赖（实战线）：新迭代任务立项依赖回顾定 `sprint-version`（回顾没跑、旧迭代任务留活跃区 = 设计内行为）；template 线不标该字段、无此依赖（§2.7 豁免）。
 
 ## Outputs（产物约定）
 
 产物按性质落（`reference/` / `exps/` / `HUMAN.md` / `notes/`），任务目录承载过程（`README.md` + `CURRENT.md`）；收尾走 WORKFLOW §7 + §2.4 沉淀门禁——**这是本标签的核心价值：让操作类工作也走立项 + 收尾门禁，根治漏沉淀**。人类操作类沉淀（操作约定 / 维护事项 / 上手流程）提议写入 `HUMAN.md`、授权后才写。
+
+- skill 市场巡检产物 = 存活候选清单（预筛表：候选 × 画像四要素 × 建议点名/排除）+ 点名项的分报。
 
 ## Verify（DoD）
 

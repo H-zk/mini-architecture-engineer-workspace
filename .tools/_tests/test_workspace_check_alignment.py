@@ -73,6 +73,10 @@ class IndexAlignmentTests(unittest.TestCase):
 
     def test_archive_task_rel_skipped(self):
         """archive 任务不查（历史行对齐另行治理）。"""
+        self.assertEqual(self._errors(task_rel="archive/story/feat-old"), [])
+
+    def test_legacy_archive_task_rel_skipped(self):
+        """旧布局残留（<根>/archive/…）不查——归档已收拢根级 archive/<根>/。"""
         self.assertEqual(self._errors(task_rel="story/archive/feat-old"), [])
 
 
@@ -180,7 +184,7 @@ class CurrentSoftLimitTests(unittest.TestCase):
 
     def test_archive_exempt(self):
         """archive 历史任务保留原貌不告警。"""
-        warns = self._warnings(["- 事件行"] * 100, rel="story/archive/feat-old")
+        warns = self._warnings(["- 事件行"] * 100, rel="archive/story/feat-old")
         self.assertEqual(warns, [])
 
 

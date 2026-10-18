@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """test_workspace_check_coverage.py — 登记完整性分区（coverage）回归测试。
 
-防线背景（task-2026-08-29-v1-paradigm-compare，2026-08-30 两实例靠操作者手动指出）：
+防线背景（历史两实例靠操作者手动指出后机器化）：
 机制实例落地后入口真源失同步——孤儿目录检测机器化，warning 档。
 验证：顶层孤儿报 / 顶层已登记过 / position 孤儿报 / position 已登记过 / 豁免集不误报。
 """

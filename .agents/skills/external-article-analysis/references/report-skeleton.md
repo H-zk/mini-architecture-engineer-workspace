@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-29
-updated-at: 2026-08-30
+updated-at: 2026-10-18
 type: external-article-analysis 报告骨架模板（产 report.md 前必读）
 ---
 
@@ -34,4 +34,4 @@ type: external-article-analysis 报告骨架模板（产 report.md 前必读）
 
 ## 判据速查（引用不展开）
 
-三层结论结构、覆盖证明、正交打分、即用不埋裁决——判据名 + 出处（`exps/workflow/skill-ecosystem-fit-portrait-first.md`（不随产物分发，随使用重建）与 `skill-fit-eval` Gates），不在报告里复写演化史。
+三层结论结构、覆盖证明、正交打分、即用不埋裁决——判据名 + 出处（`skill-fit-eval` Gates；判据演化史经 `exps/INDEX.md` 检索），不在报告里复写演化史。

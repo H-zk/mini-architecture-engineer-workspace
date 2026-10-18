@@ -12,3 +12,5 @@ argument-hint: "[对象/意图，留空先问一句]"
 | 模糊（既像治理又像具体方案） | 先问一句：「要审视工作区治理（→ workspace-grill），还是压测某个具体方案（→ grilling）？」 |
 
 $ARGUMENTS
+
+> 本文件是极薄路由，不复制 Skill 正文；命中后遵循对应 skill 的门禁与证据要求。

@@ -19,6 +19,8 @@ workspace-check.py — 工作区一致性只读检查
   - 正式产物存在（按任务类型 + 状态档位；archive 内必须已完成；
     story review.md 到强制档位须含固定分区「## 无法决策点」——内容可空，查分区存在性；
     未完成任务 README 首 H1 须含任务目录名——WORKFLOW §1.2，已完成/archive 豁免）
+  - archive 唯一归档根（归档树统一前缀 archive/<根>/，根内残留 archive/ = 旧布局散落；
+    根级出现 archive 以外的 *archive* 目录即散落归档——warning）
   - INDEX 对齐（活跃任务目录必须在对应根 INDEX.md 登记，error 级；--task/--staged 同查）
   - Markdown 链接/章节引用有效性（links 分区：本地链接存在性 + WORKFLOW §N.M 引用，warning 级）
   - 协议骨架复写（protocols 分区：通用协议句仅许在 WORKFLOW，skill 内命中或指纹真源失配 → warning）
@@ -95,6 +97,26 @@ TASK_REQUIRED = {
     "research": {"README.md": None, "CURRENT.md": None, "report.md": "已完成", "refs.md": "已完成"},
 }
 
+# 根级 archive/ 总目录（2026-10-18 收拢自各任务根内 archive/，WORKFLOW §2.5）：
+# 归档树统一前缀 archive/<根>/，活跃层判定收敛于此。
+
+
+def _in_archive(rel):
+    """路径是否属根级归档树（archive/<根>/…；rel 为仓库相对 posix 路径）。"""
+    return rel.startswith("archive/")
+
+
+def _legacy_archive(rel):
+    """旧布局残留（<根>/archive/…——归档已收拢根级 archive/<根>/，WORKFLOW §2.5）。"""
+    parts = rel.split("/")
+    return len(parts) >= 2 and parts[1] == "archive" and parts[0] in TASK_REQUIRED
+
+
+def _task_type_of(rel):
+    """任务类型推导：活跃形态 <根>/<任务> 取首段；归档形态 archive/<根>/<任务> 取第二段。"""
+    parts = rel.split("/")
+    return parts[1] if len(parts) > 1 and parts[0] == "archive" else parts[0]
+
 # review.md 固定分区（story 审核中子协议）：产物到
 # TASK_REQUIRED 强制档位（review.md 从 审核中 起）时，必须含精确二级标题「## 无法决策点」——
 # 分区固定、内容可空（空分区或「无」均合法，查的是分区存在性）；「审核中」入态分支按此机械化
@@ -123,7 +145,7 @@ PER_STATUS_RULES = {
     "workspace-optimize": {"进行中": (True, False, True), "已完成": (False, True, False)},
 }
 
-# feat（story）next 受控菜单（NEXT_MENU，B19 兑现）：token 级校验 = per-status 必填/必无
+# feat（story）next 受控菜单（NEXT_MENU）：token 级校验 = per-status 必填/必无
 # 规则的取值细化——无参 token 全字匹配；带参 token（param 集）用 `:` 后缀跟摘要且参数非空
 #（裸冒号 = next 未明确）。真源 = feat-plan-research SKILL「next/blocker 约定」节，
 # 菜单变更时同步本表；`已完成`（next 必无）由 PER_STATUS_RULES 覆盖、不入本表。
@@ -396,8 +418,8 @@ def check_task_current(task_dir, task_rel, errors, warnings):
     body = data.get("_body", "")
 
     # 状态集从执行流 skill frontmatter states: 读取（真源下放；archive 任务路径同样以
-    # 首段目录定类型，如 story/archive/xxx → story）
-    task_type = task_rel.split("/")[0]
+    # 任务根段定类型，如 archive/story/xxx → story，见 _task_type_of）
+    task_type = _task_type_of(task_rel)
     states = load_states(task_type)
     if states is None:
         errors.append(
@@ -422,7 +444,7 @@ def check_task_current(task_dir, task_rel, errors, warnings):
         if not blocker_allowed and not _is_empty(blocker):
             errors.append(f"{task_rel}: {status} blocker 必须为无（等待语义进 next/进度正文，见 skill Lifecycle）")
 
-    # feat next 受控菜单 token 级校验（B19）：越界取值按 SKILL 约定视同 next 未明确，error
+    # feat next 受控菜单 token 级校验：越界取值按 SKILL 约定视同 next 未明确，error
     if task_type == "story" and status in NEXT_MENU and not _is_empty(next_v):
         fixed, param = NEXT_MENU[status]
         norm = next_v.replace("：", ":")  # 宽容全角冒号（中文输入习惯），统一按半角判
@@ -436,6 +458,24 @@ def check_task_current(task_dir, task_rel, errors, warnings):
                 f"{task_rel}: {status} next 越界 '{next_v}'（本态菜单: {menu_s}；"
                 f"带参 token 参数非空——真源 feat-plan-research SKILL「next/blocker 约定」）"
             )
+
+    # sprint-log 尾段一致性（掉落轨迹字段，WORKFLOW §2.7 掉落改标）：掉落任务才写、
+    # 两段起；尾段必须等于该任务 sprint-version（漏 append / 掉落改标未同步当场暴露）
+    sprint_log = (data.get("sprint-log") or "").strip()
+    if sprint_log:
+        if not re.fullmatch(r"\d{8}(?: → \d{8})+", sprint_log):
+            errors.append(
+                f"{task_rel}: sprint-log 格式非法 '{sprint_log}'"
+                "（应为 '<迭代A> → <迭代B>'（YYYYMMDD、箭头分隔、两段起），见 WORKFLOW §2.7）"
+            )
+        else:
+            tail = sprint_log.split("→")[-1].strip()
+            sprint_v = (data.get("sprint-version") or "").strip()
+            if tail != sprint_v:
+                errors.append(
+                    f"{task_rel}: sprint-log 尾段 '{tail}' ≠ sprint-version '{sprint_v}'"
+                    "（掉落改标须同步 append，见 WORKFLOW §2.7）"
+                )
 
     if status == "已完成" and task_type in REVIEW_EVENT_REQUIRED:
         # review 事件（操作者完成确认留痕）：口径 = passed / legacy-exempt；
@@ -460,7 +500,7 @@ def check_task_current(task_dir, task_rel, errors, warnings):
     # （对应执行流 skill 定义，暂无定义时留任务目录过程文档），超限只告警不阻断；
     # archive 历史任务保留原貌不告警
     body_lines = [ln for ln in body.splitlines() if ln.strip()]
-    if "/archive/" not in task_rel and len(body_lines) > 60:
+    if not _in_archive(task_rel) and len(body_lines) > 60:
         warnings.append(
             f"{task_rel}: CURRENT 正文 {len(body_lines)} 非空行（>60；过程明细应归过程产物，CURRENT 只留 digest）"
         )
@@ -531,8 +571,10 @@ def check_tasks(errors, warnings):
             if not entry.is_dir() or entry.name.startswith("."):
                 continue
             if entry.name.lower() == "archive":
-                # archive 任务也参与校验
-                _check_archive(entry, task_type, errors, warnings)
+                # 根内 archive/ = 旧布局残留（归档已收拢根级 archive/<根>/，WORKFLOW §2.5）
+                warnings.append(
+                    f"{task_type}/archive/: 旧布局残留（归档收拢根级 archive/<根>/ 后根内不应再有 archive/）"
+                )
                 continue
             task_rel = f"{task_type}/{entry.name}"
             # CURRENT 用于判断状态（决定产物强制档位）
@@ -543,6 +585,10 @@ def check_tasks(errors, warnings):
             _check_products(entry, task_rel, task_type, status, errors)
             # CURRENT schema
             check_task_current(entry, task_rel, errors, warnings)
+        # 归档任务（根级 archive/<根>/，收拢自原 <根>/archive/）也参与校验
+        archive_dir = ROOT / "archive" / task_type
+        if archive_dir.exists():
+            _check_archive(archive_dir, task_type, errors, warnings)
 
 
 def _check_archive_entry(entry, task_rel, errors, warnings):
@@ -558,11 +604,27 @@ def _check_archive_entry(entry, task_rel, errors, warnings):
 
 
 def _check_archive(archive_dir, task_type, errors, warnings):
-    """archive 目录遍历入口（全量）；单任务校验见 _check_archive_entry。"""
+    """archive 目录遍历入口（全量，只扫任务子目录——INDEX.md 等文件被 is_dir 跳过）；
+    单任务校验见 _check_archive_entry。"""
     for entry in sorted(archive_dir.iterdir()):
         if not entry.is_dir() or entry.name.startswith("."):
             continue
-        _check_archive_entry(entry, f"{task_type}/archive/{entry.name}", errors, warnings)
+        _check_archive_entry(entry, f"archive/{task_type}/{entry.name}", errors, warnings)
+
+
+# archive 唯一归档根外溢（AGENTS 关联目录 archive 条 / WORKFLOW §2.5 口径）：根级只许
+# archive/ 本体（类比 temp/ 之于临时输出，固定冷层）；名字含 archive 的其他根级目录 =
+# 归档再散落。retrospectives / workspace-grills 等历史遗留冷层目录名字不含 archive，
+# 不在本判范围（归属另裁决）。
+
+
+def check_archive_root(warnings):
+    for entry in sorted(ROOT.iterdir()):
+        if entry.is_dir() and "archive" in entry.name.lower() and entry.name != "archive":
+            warnings.append(
+                f"archive 唯一归档根: 根级 {entry.name}/ 是散落归档目录"
+                "（一切归档进根级 archive/ 内开子目录，不在根级另立；AGENTS 关联目录 · archive 条）"
+            )
 
 
 def check_index_alignment(errors, warnings, task_rel=None):
@@ -572,8 +634,8 @@ def check_index_alignment(errors, warnings, task_rel=None):
     targets = []
     if task_rel:
         parts = task_rel.split("/")
-        if len(parts) >= 3 and parts[1] == "archive":
-            return  # archive 任务不查（历史行对齐另行治理）
+        if parts[0] == "archive" or _legacy_archive(task_rel):
+            return  # archive 任务不查（历史行对齐另行治理；旧布局残留同口径）
         targets.append((parts[0], parts[-1]))
     else:
         for task_type in TASK_REQUIRED:
@@ -677,21 +739,29 @@ def check_security(errors, warnings):
 # ─── temp 卫生 ─────────────────────────────────────────────────────
 
 def check_temp(errors, warnings):
-    """temp/ 应只留 README.md 与操作者常驻 todo.md；其余残留告警（用完即清，见 WORKFLOW.md §7）。"""
+    """temp/ 应只留 README.md 与操作者常驻 todo.md；其余残留告警（用完即清，见 WORKFLOW.md §7）。
+    合规形态不告警：temp/<任务id>/ 关联目录（任务工作物料不进 git 任务目录、以任务 id 前缀
+    命名关联、任务收尾随清，见 temp/README.md）。"""
     temp_dir = ROOT / "temp"
     if not temp_dir.exists():
         return
     allowed = {"README.md", "todo.md"}  # 常驻例外：README 说明 + todo.md 操作者待办
+    task_prefixes = ("feat-", "case-", "tech-", "research-", "task-")  # 任务 id 前缀（WORKFLOW §1.1）
     for entry in sorted(temp_dir.iterdir()):
         if entry.name in allowed:
             continue
         rel = f"temp/{entry.name}"
         if entry.is_dir() and entry.name == "__pycache__":
             warnings.append(f"temp 卫生: {rel}/ 是 Python 运行缓存（该删，根 .gitignore 已排除 __pycache__）")
+        elif entry.is_dir() and entry.name.startswith(task_prefixes):
+            continue  # 任务关联目录（temp/<任务id>/）＝规则内形态，收尾随清归 --task/收尾门禁管
         elif entry.is_dir():
-            warnings.append(f"temp 卫生: {rel}/ 残留（用完即清；有保留价值则移入对应任务目录，见 WORKFLOW.md §7）")
+            warnings.append(
+                f"temp 卫生: {rel}/ 残留（任务物料按 temp/<任务id>/ 关联存放、任务收尾随清；"
+                "其余用完即清，见 temp/README.md 与 WORKFLOW.md §7）"
+            )
         else:
-            warnings.append(f"temp 卫生: {rel} 残留（用完即清，见 WORKFLOW.md §7）")
+            warnings.append(f"temp 卫生: {rel} 残留（用完即清，见 temp/README.md 与 WORKFLOW.md §7）")
 
 
 # ─── worktree 卫生 ─────────────────────────────────────────────────
@@ -757,9 +827,8 @@ def check_task_worktrees(task_path, warnings):
 
 # ─── 登记完整性（入口真源须引用实际存在的实体；warning 档）──────────
 #
-# 防线：机制实例落地后入口真源失同步（2026-08-30 两实例：snapshots/ 落地
-# 而 position/README 对比体系节未挂、快照「首次回顾时启用」状态句过时——
-# 均靠操作者手动指出）。机器可判定优先于清单与自觉（坑条目三档判据）：
+# 防线：机制实例落地后入口真源失同步（历史两实例均靠操作者手动指出后才机器化）。
+# 机器可判定优先于清单与自觉（坑条目三档判据）：
 # 目录存在但入口真源零提及 = 孤儿 → warning，下次 check 自动浮出。
 
 # 顶层目录豁免：工具/环境/隐藏目录（不属 README/AGENTS 目录表管辖）
@@ -831,8 +900,8 @@ MDLINT_LINE_RE = re.compile(
 )
 
 # markdownlint 违规进 errors 还是 warnings（True=errors 阻塞；False=warnings 不阻塞）。
-# 2026-08-29 转正 True（v1 同步批次落地；前置已满足：原范围存量违规清零）。
-# 同日 B6 落地：`.agents/skills/**` 扩入 MDLINT_SCOPES——自有 skill 存量 121 处已清
+# 已转正 True（前置满足：原范围存量违规清零）。
+# 同批扩入 `.agents/skills/**`——自有 skill 存量违规已清
 #（agents-md-refiner / knowledge-base：--fix 格式修复 + 裸围栏语言标注 + 嵌套列表校正）。
 MDLINT_AS_ERROR = True
 
@@ -852,7 +921,7 @@ MDLINT_MIN_NODE_MAJOR = 20
 # VSCode 扩展 v0.62.1 实时 lint 也不读 → 已删除该文件）。workspace-check 是唯一忽略控制点。
 # 排除：src/（独立 repo）、.agents/commands（薄路由随 skill 正文维护）、temp/、
 # retrospectives/、workspace-grills/（历史冻结）、各 dot 配置目录。
-# .agents/skills：自有 skill 检（B6，2026-08-29 扩入）；vendor skill 豁免见 _vendor_skill_dirs。
+# .agents/skills：自有 skill 检；vendor skill 豁免见 _vendor_skill_dirs。
 MDLINT_SCOPES = [
     "*.md",
     ".agents/skills/**/*.md",
@@ -868,8 +937,8 @@ MDLINT_SCOPES = [
 
 # 任务 archive 排除（历史冻结先例同 retrospectives/workspace-grills）：归档文件按当年规则
 # 写成、reopen 硬截止不再变更——新规则收紧不应让历史文件拦现行全量门禁（MDLINT_AS_ERROR
-# 下即阻塞），也不再付扫描成本；追溯走冷层定向读（WORKFLOW §2.2）。
-MDLINT_ARCHIVE_NEGATIONS = [f"!{t}/archive/**" for t in TASK_REQUIRED]
+# 下即阻塞），也不再付扫描成本；追溯走冷层定向读（WORKFLOW §2.2）。根级归档树整树排除。
+MDLINT_ARCHIVE_NEGATIONS = ["!archive/**"]
 
 
 # 手动 vendor 目录（不入 lock 的 vendor：local 源复制 / 官方 zip 手动 vendor；
@@ -907,8 +976,8 @@ def _in_mdlint_scope(rel):
     if not rel.endswith(".md"):
         return False
     parts = rel.split("/")
-    # 任务 archive 历史冻结排除（与全量否定 glob 口径一致，见 MDLINT_ARCHIVE_NEGATIONS）
-    if len(parts) >= 2 and parts[1] == "archive" and parts[0] in TASK_REQUIRED:
+    # 任务 archive 历史冻结排除（根级 archive/ 树，与全量否定 glob !archive/** 口径一致）
+    if parts[0] == "archive":
         return False
     # vendor skill 豁免（与全量 !{dir}/** 负 glob 口径一致，随源不检）
     if any(rel.startswith(f"{v}/") for v in _vendor_skill_dirs()):
@@ -990,7 +1059,7 @@ def check_markdownlint(errors, warnings, scope=None, files=None):
         bucket.append(f"{tag}: {f}:{ln} {rule} {msg}")
 
 
-# ─── 登记对源侧一致性（B2③；实现外置 _registration_check.py）──────────
+# ─── 登记对源侧一致性（实现外置 _registration_check.py）──────────
 #
 # 分区实现必然引用构建脚本文件名，内联会构成开源产物残留词——独立成模块，
 # 构建时随元工序配套移除；缺席即 no-op（开源产物态无构建管线，分区自动下线）。
@@ -1166,15 +1235,15 @@ def _git_staged_files():
 
 
 def _task_dirs_from(rel_paths):
-    """从暂存路径推导涉及的任务目录（story/xxx、story/archive/xxx、workspace-optimize/xxx…）。"""
+    """从暂存路径推导涉及的任务目录（story/xxx、archive/story/xxx、workspace-optimize/xxx…）。"""
     dirs = set()
     for rel in rel_paths:
         parts = rel.split("/")
-        if parts[0] not in TASK_REQUIRED or len(parts) < 2:
-            continue
-        if len(parts) >= 3 and parts[1] == "archive":
+        if _legacy_archive(rel):
+            continue  # 旧布局残留：全量侧 warning + 跳过，staged 侧入口另有告警
+        if parts[0] == "archive" and len(parts) >= 3 and parts[1] in TASK_REQUIRED:
             dirs.add("/".join(parts[:3]))
-        else:
+        elif parts[0] in TASK_REQUIRED and len(parts) >= 2:
             dirs.add("/".join(parts[:2]))
     return sorted(dirs)
 
@@ -1195,12 +1264,16 @@ def check_staged_security(rel_paths, errors):
 
 def check_staged_tasks(rel_paths, errors, warnings):
     """--staged 任务检查：schema/产物 + 活跃任务 INDEX 对齐；archive 保持历史豁免口径。"""
+    for t in sorted({r.split("/")[0] for r in rel_paths if _legacy_archive(r)}):
+        warnings.append(
+            f"{t}/archive/: 旧布局残留（归档收拢根级 archive/<根>/ 后根内不应再有 archive/）"
+        )
     for td in _task_dirs_from(rel_paths):
         tp = ROOT / td
         if not tp.is_dir():
             continue
         parts = td.split("/")
-        if len(parts) >= 3 and parts[1] == "archive":
+        if parts[0] == "archive":
             _check_archive_entry(tp, td, errors, warnings)
             continue
         check_task_current(tp, td, errors, warnings)
@@ -1223,7 +1296,8 @@ def main():
                          "（markdownlint / 任务 schema+产物与 INDEX 对齐 / 链接 / 密钥扫描 /"
                          "平实度 / 登记对按文件聚焦，WORKFLOW/CHANGELOG 在集时附带版本一致性）；"
                          "跳过全局分区（worktrees/temp/skills/coverage/protocols 与 links 全量"
-                         "——收尾按 --task/全量覆盖）")
+                         "——收尾门禁 --task 覆盖 temp 与任务 worktrees，skills/coverage/protocols"
+                         "仅全量覆盖）")
     args = ap.parse_args()
 
     if args.staged and (args.task or args.section != "all"):
@@ -1264,19 +1338,26 @@ def main():
         if not task_path.is_dir():
             errors.append(f"--task 路径不存在或非目录：{args.task}")
         else:
-            task_type = args.task.split("/")[0] if "/" in args.task else ""
-            if task_type in TASK_REQUIRED:
-                check_task_current(task_path, args.task, errors, warnings)
-                cur = task_path / "CURRENT.md"
-                status = (parse_current(cur) or {}).get("status", "") if cur.exists() else ""
-                _check_products(task_path, args.task, task_type, status, errors)
-                check_index_alignment(errors, warnings, task_rel=args.task)
+            task_type = _task_type_of(args.task)
+            if _legacy_archive(args.task):
+                warnings.append(
+                    f"--task '{args.task}': 旧布局残留（<根>/archive/——归档已收拢根级 archive/<根>/；"
+                    "冻结件不跑活跃门禁，与全量口径一致）"
+                )
+            elif task_type in TASK_REQUIRED:
+                if _in_archive(args.task):
+                    _check_archive_entry(task_path, args.task, errors, warnings)
+                else:
+                    check_task_current(task_path, args.task, errors, warnings)
+                    cur = task_path / "CURRENT.md"
+                    status = (parse_current(cur) or {}).get("status", "") if cur.exists() else ""
+                    _check_products(task_path, args.task, task_type, status, errors)
+                    check_index_alignment(errors, warnings, task_rel=args.task)
             else:
                 warnings.append(f"--task '{args.task}' 非已知任务类型（{list(TASK_REQUIRED)}），跳过 schema/产物检查")
             # 归档任务历史冻结豁免（与全量 MDLINT_ARCHIVE_NEGATIONS 口径一致）：
-            # archive 不受现行 lint/平实度门禁约束，--task 模式仅查 schema 与产物
-            _parts = args.task.split("/")
-            if len(_parts) >= 2 and _parts[1] == "archive":
+            # archive 不受现行 lint/平实度门禁约束，--task 模式仅查 schema（必达已完成）
+            if _in_archive(args.task):
                 warnings.append(
                     f"--task '{args.task}' 为归档任务：markdownlint/平实度冻结豁免（与全量口径一致）"
                 )
@@ -1293,7 +1374,7 @@ def main():
                 )
             # worktree 自查：只查该任务 md 引用的 src/.worktrees/<组>（不带历史任务组噪音）
             check_task_worktrees(task_path, warnings)
-            # temp 自查（B2①，2026-08-29 接入）：收尾聚焦模式同查全局 temp 残留
+            # temp 自查：收尾聚焦模式同查全局 temp 残留
             #（任务自产 temp 是常态残留源，收尾即拦；与 worktrees 批次二对称补齐）
             check_temp(errors, warnings)
     else:
@@ -1302,6 +1383,7 @@ def main():
         if args.section in ("all", "tasks"):
             check_tasks(errors, warnings)
             check_index_alignment(errors, warnings)
+            check_archive_root(warnings)
         if args.section in ("all", "security"):
             check_security(errors, warnings)
         if args.section in ("all", "temp"):

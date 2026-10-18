@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""test_workspace_check_mdlint_scope.py — MDLINT scope 扩围口径回归测试（B6）。
+"""test_workspace_check_mdlint_scope.py — MDLINT scope 扩围口径回归测试。
 
 `.agents/skills/**` 扩入 MDLINT_SCOPES 后，--staged 的 _in_mdlint_scope 从
 首段目录名改为前缀判定——验证 skills 子树入范围、.agents/commands 不误入、
 vendor skill 与 archive 冻结豁免。走只读的真实 skills-lock.json 判 vendor，
 用临时 fixture 不写真实工作区文件。
-（登记对分区测试已随分区实现外置至 test_registration_check.py——构建管线侧文件，不在本仓；元工序配套。）
+（登记对分区测试已随分区实现外置至 test_registration_check.py，元工序配套。）
 """
 import importlib.util
 import sys
@@ -29,7 +29,7 @@ _spec.loader.exec_module(wc)
 
 
 class MdlintScopeTests(unittest.TestCase):
-    """_in_mdlint_scope 的 B6 扩围口径（--staged 与全量 MDLINT_SCOPES 一致性）。"""
+    """_in_mdlint_scope 的扩围口径（--staged 与全量 MDLINT_SCOPES 一致性）。"""
 
     def test_root_level_md_in_scope(self):
         self.assertTrue(wc._in_mdlint_scope("README.md"))
@@ -50,7 +50,11 @@ class MdlintScopeTests(unittest.TestCase):
         self.assertFalse(wc._in_mdlint_scope(".agents/skills/x/SKILL.py"))
 
     def test_task_archive_frozen_out(self):
-        self.assertFalse(wc._in_mdlint_scope("story/archive/feat-x/README.md"))
+        """archive 排除覆盖根级归档树全部任务根（archive/<根>/…，2026-10-18 顶层化后口径）。"""
+        for t in wc.TASK_REQUIRED:
+            self.assertFalse(wc._in_mdlint_scope(f"archive/{t}/old-task/README.md"))
+        # 旧布局残留（<根>/archive/…）不再排除——根内 archive/ 已是违规布局，lint 照扫拦它
+        self.assertTrue(wc._in_mdlint_scope("story/archive/old-task/README.md"))
 
     def test_active_task_in_scope(self):
         self.assertTrue(wc._in_mdlint_scope("workspace-optimize/task-x/README.md"))

@@ -1,0 +1,8 @@
+[project]
+name = "graphify-build"
+version = "0.1.0"
+description = "graphify 建图驱动（uv 隔离工程）：消费口径与红线见 ../graphify.md"
+requires-python = ">=3.10"
+dependencies = [
+    "graphifyy==0.9.67",
+]

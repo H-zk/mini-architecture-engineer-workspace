@@ -1,7 +1,7 @@
 ---
 name: workspace-review
-description: 评审本工作区仓库的未提交改动并给出结构化反馈、按反馈修复遗留问题、把混合多主线的改动拆成主题化 commit 时加载。触发语如「review 暂存区/工作区的改动」「看看这批改动怎么样、有什么问题」「相比原来哪些好哪些不好」「按你的反馈处理问题」「拆成 N 个 commit 分别提交」「每次只提交对应的内容」。只管本工作区仓库自身的变更评审；src/ 业务代码的编码评审归任务执行流的审核子协议，工作流机制审计走 workspace-grill——勿混。
-updated-at: 2026-08-30
+description: 评审本工作区仓库的未提交改动并给出结构化反馈、按反馈修复遗留问题（单任务收场自检止步不提交）、把混合多主线的改动拆成主题化 commit 时加载。触发语如「review 暂存区/工作区的改动」「看看这批改动怎么样、有什么问题」「相比原来哪些好哪些不好」「按你的反馈处理问题」「拆成 N 个 commit 分别提交」「每次只提交对应的内容」。只管本工作区仓库自身的变更评审；src/ 业务代码的编码评审归任务执行流的审核子协议，工作流机制审计走 workspace-grill——勿混。
+updated-at: 2026-10-18
 triggers:
   - review 改动
   - 评审改动
@@ -14,6 +14,8 @@ triggers:
 # workspace-review
 
 > 本工作区仓库未提交变更的「评审 → 反馈 → 修复 → 主题化提交」操作流。评审对象 = 工作区仓库自身（规则文档、任务产物、知识库、工具脚本）；**不含** `src/` 业务代码评审（那是 feat-plan-research 等执行流的审核子协议）与工作流机制审计（workspace-grill）。
+>
+> **两种消费形态**：① 单任务收场自检 = 只走「评审 → 反馈 → 修复」，**止步不提交**（改动保持 unstaged 攒批，挂点 = WORKFLOW §2.6 收场四件④）；② 主题化提交 = 操作者统一会话发起（可随时点，不逐任务打断），`git add` / `commit` 须当次明确授权。
 
 ## When（何时触发）
 
@@ -54,10 +56,11 @@ triggers:
 
 6. **主题化提交（操作者明确授权 git add / reset / commit 后）**：
 
+   - **起点判定（拆分手法随起点选）**：整批已全部暂存、或授权不含索引操作（AGENTS「暂存区边界」）→ 用 pathspec 提交法 / 分组 add 法，**先读 [references/commit-splitting.md](./references/commit-splitting.md)**；改动未暂存 → 下方两法。
    - 按主线分组文件；提交信息遵循仓库惯例（前缀与格式**现查 `git log` 近期条目**为准——惯例会变，不写死）。
    - **混合文件 hunk 级拆分两法**：
      - **补丁法**：`git diff HEAD -- <file>` 按 hunk 切分 → `git add <file>` 后 `git apply --cached --reverse <摘除补丁>`，把不属于本 commit 的 hunk 从索引摘除；
-     - **临时编辑法**（相邻改动被 git 合并成单 hunk、补丁法切不开时）：`cp` 备份文件 → 编辑到中间态（只留本主题改动）→ add / commit → `cp` 备份精确还原。**中断恢复**：会话在 commit 后、还原前中断时工作区会停在中间态——接手先 `git status` 对照备份把文件还原到最终态再继续，勿在中间态上续作。
+     - **临时编辑法**（相邻改动被 git 合并成单 hunk、补丁法切不开时）：`cp` 备份文件 → 编辑到中间态（只留本主题改动）→ add / commit → `cp` 备份精确还原。**中断恢复**：会话在 commit 后、还原前中断时工作区会停在中间态——接手先 `git status` 对照备份把文件还原到最终态再继续，勿在中间态上续作。**脚本化批量执行前必读 [references/commit-splitting.md](./references/commit-splitting.md)（脚本化防御结构：写前求值 + 副作用入 try 五步）**。
    - **每个 commit 前逐文件核验**：`git diff --cached --stat` + 关键文件 `git diff --cached <file>`，确认暂存集只含本主题内容。
    - **commit 前机器门禁（lint-staged 式，聚焦暂存集）**：暂存集就绪后跑 `python .tools/workspace-check.py --staged`——只检查暂存文件（markdownlint / 任务 schema+产物 / 链接 / 密钥扫描按文件聚焦；archive 任务只查 schema 与必达已完成，与全量同口径），`errors=0` 才 commit；全局分区（worktrees/temp 等）不在此跑，任务收尾仍按收尾门禁（`--task` / 全量）。
    - **commit 信息确认门禁**：机器门禁过后、执行 commit 前，把**完整提交信息（标题 + 正文）展示在会话内**，操作者确认后才执行 commit——未展示或未确认不提交；多 commit 拆分时每个 commit 的信息逐一展示确认。

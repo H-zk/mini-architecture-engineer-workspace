@@ -1,6 +1,6 @@
 ---
 created-at: 2026-08-30
-updated-at: 2026-08-30
+updated-at: 2026-10-18
 type: worktree 细则真源（三视图 / feature 分支 / 路径 / 着陆卡 / 清理）
 ---
 
@@ -33,6 +33,8 @@ type: worktree 细则真源（三视图 / feature 分支 / 路径 / 着陆卡 / 
 ## 子窗口着陆卡
 
 任务用独立 code-workspace / 子窗口会话时（读不到父级规范），用 `.tools/sync-worktree-workspace.py` 生成任务侧着陆卡 AGENTS.md（模板真源 `workspace-code-setting/`：最低硬规则 + 真源指针 + 会话启动协议；机制见其 README）。
+
+- **通用门禁速查区**：着陆卡含一行一条的硬门禁速查，渲染源 = [WORKFLOW §2](../../../../WORKFLOW.md) 的 gate-quickref:common 标记块；feat 流任务另含「feat 门禁速查」区，渲染源 = [feat-plan-research SKILL](../SKILL.md) 的 gate-quickref:feat 标记块。任务窗口会话看不到父仓规范，速查区是最低限度硬规则载体；当前为模板手工同步快照（生成器抽块渲染与 quickref 机检对账随工具批接入），改真源块时同步改模板速查区。
 
 ## 任务 README 代码上下文表
 

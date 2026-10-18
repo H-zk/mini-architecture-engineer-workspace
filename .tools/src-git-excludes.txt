@@ -1,0 +1,7 @@
+# src/ 各仓统一 git 本地忽略（真源，勿在各仓散置）
+# 铺装：python .tools/apply-src-git-excludes.py（幂等；新 clone 仓后跑一次）
+# 形态 = 各仓 .git/info/exclude 托管块；与全局/XDG ignore 叠加生效，
+# 不写 core.excludesFile（repo 级该配置会遮蔽 ~/.config/git/ignore）。
+# 收录口径：本工作区工具在源仓产生的、不进远端的产物目录。
+.codegraph/
+graphify-out/

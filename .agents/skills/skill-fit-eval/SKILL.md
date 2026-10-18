@@ -1,7 +1,7 @@
 ---
 name: skill-fit-eval
-description: 外部 skill 单仓定向选型评估执行流，无需特定措辞——只要给出 skill 仓库/链接并要求分析（「分析一下这个 skill」「适不适合我们」「能不能直接用」「是否利好现有流程」等任何说法）即加载：锚定基线 → 初判轮简析出 report.md → 深析轮 subAgent 分域（仓内深读/外部口碑/安全组合位）→ 可选实测 → 裁决留操作者；仅分析不自动落实。广域「找些 skill 提效」（无指定对象）不触发——那是先画像后找调研（exps skill-ecosystem-fit）；文章链接输入走姊妹 skill external-article-analysis（判据层共用）。
-updated-at: 2026-08-30
+description: 外部 skill 单仓定向选型评估执行流，无需特定措辞——只要给出 skill 仓库/链接并要求分析（「分析一下这个 skill」「适不适合我们」「能不能直接用」「是否利好现有流程」等任何说法）即加载：锚定基线 → 初判轮简析出 report.md → 深析轮 subAgent 分域（仓内深读/外部口碑/安全组合位）→ 可选实测 → 裁决留操作者；仅分析不自动落实。广域「找些 skill 提效」（无指定对象）不触发——那是先画像后找调研（exps skill-ecosystem-fit-portrait-first）；文章链接输入走姊妹 skill external-article-analysis（判据层共用）。
+updated-at: 2026-10-18
 triggers:
   - 分析这个 skill
   - 这个 skill 能不能用
@@ -12,14 +12,14 @@ triggers:
 
 # skill-fit-eval
 
-> 本文是「外部 skill 单仓定向选型评估」执行流的单一真源。**分工**：本文管轮次 / 门禁 / 产物；评估判据的演化史与判例库 = 内部经验库 `exps/workflow/skill-ecosystem-fit-portrait-first.md`（经验条目不随产物分发，随使用重建）；vendor 判定与安装后安全确认 = [`VENDOR.md`](../VENDOR.md)。任务属 `#workspace-optimize`（自定义输入立项；Lifecycle / reopen / review 门禁随 workspace-ops，本文不复制协议骨架）。
+> 本文是「外部 skill 单仓定向选型评估」执行流的单一真源。**分工**：本文管轮次 / 门禁 / 产物；评估判据的演化史与判例库检索走 [`exps/INDEX.md`](../../../exps/INDEX.md)（条目：skill-ecosystem-fit-portrait-first；模板态空表属预期，条目随使用重建）；vendor 判定与安装后安全确认 = [`VENDOR.md`](../VENDOR.md)。任务属 `#workspace-optimize`（自定义输入立项；Lifecycle / reopen / review 门禁随 workspace-ops，本文不复制协议骨架）。
 > **无独立状态机**：本 skill 由 `#workspace-optimize` 任务承载（两态 Lifecycle 见 workspace-ops），本文件 frontmatter 不设 `states:`。
 
 ## When（何时触发）
 
 - **自然触发（无需任何特定措辞）**：操作者给出一个（或一组）外部 skill / skill 仓库链接 + 分析意图——「分析一下」「适不适合我们」「能不能直接用」「是否利好现有流程」等任何措辞均命中本流程。
 - **立项归属**：`#workspace-optimize` 自定义输入（skill 分析请求本身即自定义输入内容）；裸链接 + 分析指令而无标签时，按 WORKFLOW §1.3 模糊地带反问一句确认立项——问的是「立不立」，不是「换措辞再说一遍」。
-- **不触发**（就近路由）：广域「找些 skill 提效」（无指定对象）→ 先画像后找调研（画像四要素见 exps skill-ecosystem-fit）；已 vendor 安装的 skill 安全确认 → VENDOR.md；同事库 / 开源工作区整体对比 → colleague-kb-synthesis；文章输入（链接为网页正文、无仓可锚、无引入判定）→ 姊妹 skill external-article-analysis；**混合输入（文章 + skill 仓）分治**——文章部分走它、仓库部分走本流程，综合层合并。
+- **不触发**（就近路由）：广域「找些 skill 提效」（无指定对象）→ 先画像后找调研（画像四要素见 exps skill-ecosystem-fit-portrait-first）；已 vendor 安装的 skill 安全确认 → VENDOR.md；同事库 / 开源工作区整体对比 → colleague-kb-synthesis；文章输入（链接为网页正文、无仓可锚、无引入判定）→ 姊妹 skill external-article-analysis；**混合输入（文章 + skill 仓）分治**——文章部分走它、仓库部分走本流程，综合层合并。
 
 ## Steps（四轮 + 裁决）
 
@@ -84,7 +84,7 @@ triggers:
 
 - `report.md`（适配判定，必产物）+ 可选 `analysis-<skill>.md`（独立深析）/ `trial-<主题>.md`（实测）；骨架见 [references/report-skeleton.md](./references/report-skeleton.md)。
 - 多对象变体：每对象一份分报 `report-<name>.md` + 综合层 `report.md`（交叉对照 + 综合方案，主报告收敛为摘要 + 指针）。
-- 沉淀惯例（裁决轮落实，不自动写）：新判据 / 判例 → 增补 exps skill-ecosystem-fit 一行（合并优先）；克隆留档 → `src/`（经裁决）。
+- 沉淀惯例（裁决轮落实，不自动写）：新判据 / 判例 → 增补 exps skill-ecosystem-fit-portrait-first 一行（合并优先）；克隆留档 → `src/`（经裁决）。
 - 无代码交付；temp 浅克隆收尾清理；INDEX 登记摘要。
 
 ## Verify（DoD）
@@ -92,4 +92,4 @@ triggers:
 - report.md 结论先行、锚点可溯、三层结论齐且即用品无混层；骨架符合 references/report-skeleton.md。
 - 深析轮 subAgent 报告经主会话复核（关键论断带原文 / 行号证据，产物存在性核验）。
 - `python .tools/workspace-check.py --task <当前任务>` errors=0。
-- 首用回写：本 skill 首个真实评估任务收尾时，回写使用偏差进该任务 README（首用验证范式，见 exps skill-authoring-review——经验条目不随产物分发，随使用重建）。
+- 首用回写：本 skill 首个真实评估任务收尾时，回写使用偏差进该任务 README（首用验证范式，条目经 [`exps/INDEX.md`](../../../exps/INDEX.md) 检索——经验不随产物分发，随使用重建）。
